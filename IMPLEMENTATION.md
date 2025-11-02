@@ -38,10 +38,10 @@
 - [x] Sidebar hover context for responsive layout adjustments
 
 ### Pages
-- [x] Home/Feed page (with collection banner, OpenSea-style grid, LeftRail, Header, responsive)
-- [x] Marketplace page with filters (responsive, LeftRail, Header)
+- [x] Home/Feed page (with collection banner, OpenSea-style grid, LeftRail, Header, responsive, optimized)
+- [x] Marketplace page with filters (responsive, LeftRail, Header, performance optimized)
 - [x] Discover page (grid/feed view toggle, responsive, LeftRail, Header)
-- [x] Mind page (3D brain visualization, responsive layout)
+- [x] Mind page (3D brain visualization, responsive layout, SSR-safe with BrainCanvasClient)
 - [x] Leaderboard page (structure complete, needs dummy data API)
 - [x] Packs page (structure complete, needs dummy data API)
 - [x] Settings page (responsive, LeftRail)
@@ -117,6 +117,8 @@
 - [x] CN utility for className merging
 - [x] Dummy data generator (lib/dummy-data.ts) with seeded random for consistency
 - [x] Sidebar context provider for responsive hover state
+- [x] React Query configuration (optimized caching, stale time, gc time)
+- [x] Next.js configuration (webpack optimization, font optimization, package imports)
 
 ### Documentation
 - [x] README.md
@@ -128,7 +130,7 @@
 ### Features Completed (Recent)
 - [x] Responsive design for mobile, tablet, desktop
 - [x] Collapsible sidebar with hover expansion
-- [x] Collection banner with "Where's Wally" neural workers scene
+- [x] Collection banner simplified to orange gradient (performance optimization)
 - [x] Item detail page with full Twitter-style post display
 - [x] Comment thread with authentication gates
 - [x] "More from creator" section showing related NFT mints
@@ -137,6 +139,17 @@
 - [x] Verified badge clickable with verification info
 - [x] All pages include LeftRail and Header for consistent navigation
 - [x] Performance optimizations (React Query caching, memoization, lazy loading)
+- [x] Login/Signup modal UI (centered, responsive, React portal rendering)
+- [x] Profile avatar click opens login modal when not connected
+- [x] Image lazy loading with Intersection Observer
+- [x] Next.js Image optimization for all images
+- [x] Webpack configuration for dev chunk loading
+- [x] BrainCanvasClient for SSR-safe 3D rendering
+- [x] Simplified CollectionBanner (removed complex SVG animations)
+- [x] Removed Framer Motion from NFTCard (CSS-only animations)
+- [x] API pagination and caching (default 24 items, cache headers)
+- [x] Request timeout handling (10 second timeout)
+- [x] Font optimization (display: swap, preload)
 
 ## 🚧 TODO: Critical for MVP
 
@@ -354,11 +367,16 @@
 - [ ] Add input validation
 
 ### Performance
-- [ ] Optimize bundle size
-- [ ] Add code splitting
-- [ ] Optimize database queries
-- [ ] Add caching strategy
-- [ ] Optimize 3D rendering (instanced meshes)
+- [x] Optimize bundle size (dynamic imports, code splitting)
+- [x] Add code splitting (lazy loading for CollectionBanner, RightRail)
+- [x] Optimize database queries (pagination, caching headers)
+- [x] Add caching strategy (React Query, API cache headers)
+- [x] Optimize 3D rendering (SSR-safe client-side rendering with BrainCanvasClient)
+- [x] Image optimization (Next.js Image component, lazy loading with Intersection Observer)
+- [x] Remove Framer Motion from grid cards (CSS-only animations)
+- [x] Memoization of calculations and components
+- [x] Webpack optimization for chunk loading in dev mode
+- [x] Simplified CollectionBanner from complex SVG to simple gradient
 
 ### Documentation
 - [ ] API documentation
