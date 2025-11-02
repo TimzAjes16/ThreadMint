@@ -45,72 +45,72 @@ export function CollectionHeader({
         <div className="absolute inset-0 bg-gradient-to-t from-bg/80 to-transparent" />
       </div>
 
-      <div className="relative -mt-20 px-6">
-        <Card className="p-6">
+      <div className="relative -mt-12 md:-mt-20 px-4 md:px-6">
+        <Card className="p-4 md:p-6">
           {/* Collection Info */}
-          <div className="flex items-start gap-6 mb-6">
-            <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-brand-500 to-curiosity border-4 border-bg shadow-lg shrink-0 flex items-center justify-center text-5xl">
+          <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 mb-4 md:mb-6">
+            <div className="w-20 h-20 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-brand-500 to-curiosity border-4 border-bg shadow-lg shrink-0 flex items-center justify-center text-3xl md:text-5xl">
               🧠
             </div>
-            <div className="flex-1 pt-4">
-              <h1 className="text-4xl font-bold text-text mb-2">{name}</h1>
+            <div className="flex-1 pt-0 md:pt-4">
+              <h1 className="text-2xl md:text-4xl font-bold text-text mb-2">{name}</h1>
               {creator && (
-                <div className="flex items-center gap-2 text-muted mb-3">
+                <div className="flex items-center gap-2 text-muted mb-2 md:mb-3 text-sm md:text-base">
                   <span>By</span>
                   <span className="text-brand-400 font-medium">{creator}</span>
                 </div>
               )}
               {description && (
-                <p className="text-muted text-sm leading-relaxed max-w-2xl">
+                <p className="text-muted text-xs md:text-sm leading-relaxed max-w-2xl">
                   {description}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 pt-6 border-t border-line">
+          {/* Stats Grid - Responsive */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 sm:gap-3 md:gap-4 pt-4 md:pt-6 border-t border-line">
             <div>
-              <div className="text-xs text-muted font-medium mb-1">Floor price</div>
-              <div className="text-lg font-bold text-text">
+              <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">Floor price</div>
+              <div className="text-base sm:text-lg font-bold text-text truncate">
                 {floorPrice && floorPrice !== 'Infinity' ? floorPrice : '0'} ETH
               </div>
             </div>
             <div>
-              <div className="text-xs text-muted font-medium mb-1">24h volume</div>
-              <div className="text-lg font-bold text-text">
+              <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">24h volume</div>
+              <div className="text-base sm:text-lg font-bold text-text truncate">
                 {volume24h || '0'} ETH
               </div>
             </div>
-            <div>
-              <div className="text-xs text-muted font-medium mb-1">Total volume</div>
-              <div className="text-lg font-bold text-text">
+            <div className="hidden lg:block">
+              <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">Total volume</div>
+              <div className="text-base sm:text-lg font-bold text-text truncate">
                 {totalVolume || '0'} ETH
               </div>
             </div>
             <div>
-              <div className="text-xs text-muted font-medium mb-1">Listed</div>
-              <div className="text-lg font-bold text-text">
+              <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">Listed</div>
+              <div className="text-base sm:text-lg font-bold text-text">
                 {listedPercent}%
               </div>
-              <div className="text-xs text-muted">{listed} items</div>
+              <div className="text-xs text-muted hidden sm:block">{listed} items</div>
             </div>
-            <div>
-              <div className="text-xs text-muted font-medium mb-1">Total supply</div>
-              <div className="text-lg font-bold text-text">
+            <div className="hidden sm:block">
+              <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">Total supply</div>
+              <div className="text-base sm:text-lg font-bold text-text">
                 {totalSupply?.toLocaleString() || '0'}
               </div>
             </div>
-            <div>
-              <div className="text-xs text-muted font-medium mb-1">Owners</div>
-              <div className="text-lg font-bold text-text">
+            <div className="hidden md:block">
+              <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">Owners</div>
+              <div className="text-base sm:text-lg font-bold text-text">
                 {uniqueOwners.toLocaleString()}
               </div>
-              <div className="text-xs text-muted">{uniquePercent}% unique</div>
+              <div className="text-xs text-muted hidden lg:block">{uniquePercent}% unique</div>
             </div>
-            <div>
-              <div className="text-xs text-muted font-medium mb-1">Category</div>
-              <div className="text-lg font-bold text-text">Neural</div>
+            <div className="hidden xl:block">
+              <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">Category</div>
+              <div className="text-base sm:text-lg font-bold text-text">Neural</div>
             </div>
           </div>
         </Card>

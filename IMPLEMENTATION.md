@@ -21,30 +21,40 @@
 - [x] Button component (primary, secondary, ghost variants)
 - [x] Card component
 - [x] PostCard component (Twitter-like post display)
-- [x] NFTCard component (OpenSea-like marketplace card)
+- [x] NFTCard component (OpenSea-like marketplace card) with engagement metrics
 - [x] CreatePost component
 - [x] MindMini component (sidebar preview)
 - [x] Layout components (LeftRail, RightRail, FeedLayout)
-- [x] Header component (with Connect Wallet button and profile picture)
+- [x] Header component (with Connect Wallet button and profile picture, responsive)
 - [x] UserMenu component (profile dropdown with auth options)
-- [x] LoginModal component (email/password login)
-- [x] SignupModal component (user registration)
-- [x] CollectionBanner component (neural-themed "Where's Wally" style banner)
+- [x] LoginModal component (email/password login, centered, responsive)
+- [x] SignupModal component (user registration, centered, responsive)
+- [x] CollectionBanner component (neural-themed "Where's Wally" style banner with workers)
 - [x] CollectionHeader component (collection stats and info)
 - [x] MarketplaceFilters component
 - [x] MarketplaceTabs component
+- [x] Avatar2D component (programmatic 2D avatar generation)
+- [x] CommentThread component (Twitter-style comments with threading, auth-gated)
+- [x] Sidebar hover context for responsive layout adjustments
 
 ### Pages
-- [x] Home/Feed page (with collection banner, OpenSea-style grid)
-- [x] Marketplace page with filters
-- [x] Discover page
-- [x] Mind page (3D brain visualization)
-- [x] Leaderboard page
-- [x] Packs page
-- [x] Settings page
-- [x] Profile page (/profile) - User profile with collections and stats
-- [x] Help page (/help) - Support and documentation
-- [x] Item detail page (/item/[id]) - OpenSea-style NFT item page with Twitter post details
+- [x] Home/Feed page (with collection banner, OpenSea-style grid, LeftRail, Header, responsive)
+- [x] Marketplace page with filters (responsive, LeftRail, Header)
+- [x] Discover page (grid/feed view toggle, responsive, LeftRail, Header)
+- [x] Mind page (3D brain visualization, responsive layout)
+- [x] Leaderboard page (structure complete, needs dummy data API)
+- [x] Packs page (structure complete, needs dummy data API)
+- [x] Settings page (responsive, LeftRail)
+- [x] Profile page (/profile) - User profile with collections and stats (responsive, LeftRail, Header)
+- [x] Help page (/help) - Support and documentation (responsive, LeftRail, Header)
+- [x] Item detail page (/item/[id]) - OpenSea-style NFT item page with Twitter post details:
+  - [x] Item media and details layout
+  - [x] Twitter-style post display with engagement metrics
+  - [x] Comment thread with authentication checks
+  - [x] "More from creator" section showing related NFT mints
+  - [x] Verified badge clickable functionality
+  - [x] Responsive design
+  - [x] Tabs (Details, Orders, Activity, Traits, Price History, About)
 
 ### 3D Brain Components
 - [x] BrainCanvas (React Three Fiber setup)
@@ -71,16 +81,16 @@
 
 ### API Routes
 - [x] POST /api/posts (create echo)
-- [x] GET /api/posts (fetch posts feed)
+- [x] GET /api/posts (fetch posts feed, dummy data fallback)
 - [x] POST /api/mint (mark post as minted)
 - [x] POST /api/collect (record collection & trigger absorption)
 - [x] POST /api/react (create reaction)
-- [x] GET /api/market (marketplace with filters)
-- [x] GET /api/mind/graph (get 3D brain graph)
+- [x] GET /api/market (marketplace with filters, dummy data fallback, pagination, caching)
+- [x] GET /api/mind/graph (get 3D brain graph, dummy data fallback needed)
 - [x] POST /api/mind/recompute (recompute mind state)
-- [x] POST /api/ai/summary (generate summary + TTS)
-- [x] GET /api/leaderboard (top creators/collectors)
-- [x] GET /api/packs (fetch packs)
+- [x] POST /api/ai/summary (generate summary + TTS, dummy data fallback)
+- [x] GET /api/leaderboard (top creators/collectors, needs dummy data implementation)
+- [x] GET /api/packs (fetch packs, needs dummy data implementation)
 - [x] POST /api/packs (create pack)
 - [x] GET /api/cron/reactions (reaction settlement worker)
 - [x] POST /api/cron/mind-aggregate (mind aggregation worker)
@@ -102,9 +112,11 @@
 - [x] Network switching support
 
 ### Utilities
-- [x] Supabase client setup
+- [x] Supabase client setup (conditional initialization, dummy data fallback)
 - [x] Utility functions (formatEth, formatAddress, calculateAbsorptionWeight)
 - [x] CN utility for className merging
+- [x] Dummy data generator (lib/dummy-data.ts) with seeded random for consistency
+- [x] Sidebar context provider for responsive hover state
 
 ### Documentation
 - [x] README.md
@@ -113,7 +125,26 @@
 
 ---
 
+### Features Completed (Recent)
+- [x] Responsive design for mobile, tablet, desktop
+- [x] Collapsible sidebar with hover expansion
+- [x] Collection banner with "Where's Wally" neural workers scene
+- [x] Item detail page with full Twitter-style post display
+- [x] Comment thread with authentication gates
+- [x] "More from creator" section showing related NFT mints
+- [x] Engagement metrics (comments, retweets, likes, views) with real values
+- [x] Horizontal scroll for engagement stats
+- [x] Verified badge clickable with verification info
+- [x] All pages include LeftRail and Header for consistent navigation
+- [x] Performance optimizations (React Query caching, memoization, lazy loading)
+
 ## 🚧 TODO: Critical for MVP
+
+### API Dummy Data Implementation
+- [ ] Complete leaderboard API with dummy data (top creators/collectors)
+- [ ] Complete packs API with dummy data
+- [ ] Complete mind/graph API with dummy data (generate sample nodes/edges)
+- [ ] Ensure all API routes have consistent dummy data fallback patterns
 
 ### Environment Setup
 - [ ] Create .env file with actual credentials:
@@ -131,11 +162,13 @@
 - [ ] Test database connections
 
 ### Authentication
-- [x] Login modal UI (email/password)
-- [x] Signup modal UI (user registration)
+- [x] Login modal UI (email/password, centered, responsive, accessible)
+- [x] Signup modal UI (user registration, centered, responsive, accessible)
 - [x] User menu dropdown (profile, settings, help)
-- [x] Profile picture in header (wallet-connected state)
-- [x] Profile page structure
+- [x] Profile picture in header (wallet-connected state, 2D avatar fallback)
+- [x] Profile page structure (responsive, LeftRail, Header)
+- [x] Comment authentication gates (require sign-in to comment/reply)
+- [x] Verified badge clickable functionality
 - [ ] Implement Supabase Auth integration
 - [ ] Link wallet address to user account
 - [ ] Handle user registration/login backend flow
@@ -206,13 +239,13 @@
 - [ ] Cache graph in mind_graph_cache
 
 ### Marketplace
-- [ ] Implement filters (emotion, creator, price range)
-- [ ] Implement sorting (trending, most collected, new, resonance)
-- [ ] Display sold-out state
+- [x] Implement filters (emotion, creator, price range) - UI complete
+- [x] Implement sorting (trending, most collected, new, resonance) - Backend complete
+- [ ] Display sold-out state (UI ready, needs data)
 - [ ] Show countdown timers for open editions
 - [ ] Display serial numbers for editions
 - [ ] Handle "Buy on secondary" CTA
-- [ ] Pagination/infinite scroll
+- [x] Pagination/infinite scroll (API ready, needs UI implementation)
 
 ### Reactions
 - [ ] Implement like/comment/quote UI

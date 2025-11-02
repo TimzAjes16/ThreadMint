@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Avatar2D } from '@/components/profile/Avatar2D';
 import { CommentThread } from '@/components/post/CommentThread';
 import { LeftRail } from '@/components/layout/LeftRail';
+import { NFTCard } from '@/components/market/NFTCard';
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import Image from 'next/image';
@@ -47,11 +48,40 @@ export default function ItemDetailPage() {
     enabled: !!itemId,
   });
 
+  // Fetch more items from the same creator
+  const { data: relatedItems } = useQuery({
+    queryKey: ['related-items', item?.users?.handle, itemId],
+    queryFn: async () => {
+      if (!item?.users?.handle) return [];
+      try {
+        // Fetch all minted items
+        const marketRes = await fetch('/api/market?limit=100');
+        const marketData = await marketRes.json();
+        // Filter by same creator, exclude current item
+        const related = marketData.items?.filter((i: any) => {
+          const itemSlug = i.id || i.body?.replace(/\s+/g, '-').toLowerCase().substring(0, 50);
+          return (
+            i.minted &&
+            i.users?.handle === item.users?.handle &&
+            i.id !== item.id &&
+            itemSlug !== itemId
+          );
+        }) || [];
+        // Limit to 6 items
+        return related.slice(0, 6);
+      } catch (error) {
+        console.error('Error fetching related items:', error);
+        return [];
+      }
+    },
+    enabled: !!item?.users?.handle && !!itemId,
+  });
+
   if (isLoading) {
     return (
       <>
         <LeftRail />
-        <div className="ml-16 group-hover:ml-64 mr-80 min-h-screen flex items-center justify-center transition-all duration-300 ease-in-out">
+        <div className="ml-0 md:ml-16 md:group-hover:ml-64 mr-0 lg:mr-80 min-h-screen flex items-center justify-center transition-all duration-300 ease-in-out">
           <div className="text-muted">Loading neuron...</div>
         </div>
       </>
@@ -62,7 +92,7 @@ export default function ItemDetailPage() {
     return (
       <>
         <LeftRail />
-        <div className="ml-16 group-hover:ml-64 mr-80 min-h-screen flex items-center justify-center transition-all duration-300 ease-in-out">
+        <div className="ml-0 md:ml-16 md:group-hover:ml-64 mr-0 lg:mr-80 min-h-screen flex items-center justify-center transition-all duration-300 ease-in-out px-4">
         <Card className="p-12 text-center">
           <div className="text-5xl mb-4 opacity-50">🧠</div>
           <div className="text-xl font-semibold text-text mb-2">
@@ -93,9 +123,9 @@ export default function ItemDetailPage() {
   return (
     <>
       <LeftRail />
-      <div className="ml-16 group-hover:ml-64 mr-80 min-h-screen transition-all duration-300 ease-in-out">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="ml-0 md:ml-16 md:group-hover:ml-64 mr-0 lg:mr-80 min-h-screen transition-all duration-300 ease-in-out">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
           {/* Left: Item Media */}
           <div className="space-y-4">
             <Card className="overflow-hidden">
@@ -119,15 +149,28 @@ export default function ItemDetailPage() {
           <div className="space-y-6">
             {/* Collection & Creator */}
             <div>
-              <div className="text-sm text-muted mb-2">ThreadMint Neural Posts</div>
-              <h1 className="text-3xl font-bold text-text mb-4">
+              <div className="text-xs sm:text-sm text-muted mb-1.5 sm:mb-2">ThreadMint Neural Posts</div>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text mb-3 sm:mb-4 break-words">
                 {item.body || 'Neural Thought'}
               </h1>
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-500 to-curiosity" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                {item.users?.avatar_url ? (
+                  <img
+                    src={item.users.avatar_url}
+                    alt={item.users.handle}
+                    className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <Avatar2D name={item.users?.display_name || item.users?.handle || 'unknown'} size="sm" className="sm:hidden" />
+                )}
+                {!item.users?.avatar_url && (
+                  <div className="hidden sm:block">
+                    <Avatar2D name={item.users?.display_name || item.users?.handle || 'unknown'} size="md" />
+                  </div>
+                )}
                 <div>
-                  <div className="text-sm text-muted">Created by</div>
-                  <div className="font-semibold text-text">
+                  <div className="text-xs sm:text-sm text-muted">Created by</div>
+                  <div className="font-semibold text-text text-sm sm:text-base">
                     @{item.users?.handle || 'unknown'}
                   </div>
                 </div>
@@ -135,61 +178,61 @@ export default function ItemDetailPage() {
             </div>
 
             {/* Price & Buy Section */}
-            <Card className="p-6 border-2 border-brand-500/30 bg-brand-500/5">
-              <div className="space-y-4">
+            <Card className="p-4 sm:p-6 border-2 border-brand-500/30 bg-brand-500/5">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <div className="text-sm text-muted mb-1">Current price</div>
-                  <div className="text-3xl font-bold text-text">
+                  <div className="text-xs sm:text-sm text-muted mb-1">Current price</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-text">
                     {price > 0 ? `${price.toFixed(4)} ETH` : 'Not listed'}
                   </div>
                 </div>
 
                 {price > 0 ? (
-                  <>
-                    <Button 
-                      className="w-full" 
-                      variant="primary" 
-                      size="lg"
-                      onClick={() => {
-                        // TODO: Implement buy functionality
-                        alert('Buy functionality coming soon!');
-                      }}
-                    >
-                      Buy now
-                    </Button>
-                    <Button 
-                      className="w-full" 
-                      variant="secondary"
-                      onClick={() => {
-                        // TODO: Implement offer functionality
-                        alert('Make offer coming soon!');
-                      }}
-                    >
-                      Make offer
-                    </Button>
-                  </>
-                ) : (
-                  <Button 
-                    className="w-full" 
-                    variant="secondary" 
-                    size="lg"
-                    onClick={() => {
-                      // TODO: Implement secondary marketplace link
-                      alert('Secondary marketplace coming soon!');
-                    }}
-                  >
-                    View on secondary
-                  </Button>
-                )}
+                      <>
+                        <Button 
+                          className="w-full text-sm sm:text-base" 
+                          variant="primary" 
+                          size="lg"
+                          onClick={() => {
+                            // TODO: Implement buy functionality
+                            alert('Buy functionality coming soon!');
+                          }}
+                        >
+                          Buy now
+                        </Button>
+                        <Button 
+                          className="w-full text-sm sm:text-base" 
+                          variant="secondary"
+                          onClick={() => {
+                            // TODO: Implement offer functionality
+                            alert('Make offer coming soon!');
+                          }}
+                        >
+                          Make offer
+                        </Button>
+                      </>
+                    ) : (
+                      <Button 
+                        className="w-full text-sm sm:text-base" 
+                        variant="secondary" 
+                        size="lg"
+                        onClick={() => {
+                          // TODO: Implement secondary marketplace link
+                          alert('Secondary marketplace coming soon!');
+                        }}
+                      >
+                        View on secondary
+                      </Button>
+                    )}
 
                 <div className="pt-4 border-t border-line">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
-                      <div className="text-muted mb-1">Top offer</div>
+                      <div className="text-muted mb-0.5 sm:mb-1">Top offer</div>
                       <div className="font-semibold text-text">-- ETH</div>
                     </div>
                     <div>
-                      <div className="text-muted mb-1">Collection floor</div>
+                      <div className="text-muted mb-0.5 sm:mb-1">Collection floor</div>
                       <div className="font-semibold text-text">0.1000 ETH</div>
                     </div>
                   </div>
@@ -198,9 +241,9 @@ export default function ItemDetailPage() {
             </Card>
 
             {/* Item Info */}
-            <Card className="p-6">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
+            <Card className="p-4 sm:p-6">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                   <div>
                     <div className="text-muted mb-1">Token ID</div>
                     <div className="font-semibold text-text">
@@ -260,8 +303,8 @@ export default function ItemDetailPage() {
         </div>
 
         {/* Tabs Section */}
-        <div className="mt-12">
-          <div className="flex items-center gap-1 border-b border-line mb-6">
+        <div className="mt-6 md:mt-12">
+          <div className="flex items-center gap-1 border-b border-line mb-4 md:mb-6 overflow-x-auto scrollbar-hide">
             {[
               { id: 'details', label: 'Details' },
               { id: 'orders', label: 'Orders' },
@@ -274,7 +317,7 @@ export default function ItemDetailPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  px-4 py-3 text-sm font-medium transition-colors relative
+                  px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm font-medium transition-colors relative shrink-0
                   ${
                     activeTab === tab.id
                       ? 'text-text'
@@ -290,12 +333,12 @@ export default function ItemDetailPage() {
             ))}
           </div>
 
-          {/* Tab Content */}
-          <Card className="p-8">
+            {/* Tab Content */}
+            <Card className="p-4 sm:p-6 md:p-8">
             {activeTab === 'details' && (
               <div className="space-y-6">
                 {/* Twitter-like Post Display (Main Minted Post) */}
-                <Card className="p-6 bg-panel2">
+                  <Card className="p-4 md:p-6 bg-panel2">
                   <div className="flex gap-4">
                     {item.users?.avatar_url ? (
                       <img
@@ -312,29 +355,40 @@ export default function ItemDetailPage() {
                           {item.users?.display_name || item.users?.handle || 'unknown'}
                         </span>
                         {item.users?.verified && (
-                          <svg
-                            className="w-4 h-4 text-brand-400 shrink-0"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              // TODO: Navigate to verification info or user profile
+                              alert(`@${item.users?.handle || 'unknown'} is a verified creator`);
+                            }}
+                            className="group/verify"
+                            title="Verified creator"
+                            aria-label="Verified creator"
                           >
-                            <path
-                              fillRule="evenodd"
-                              d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                            <svg
+                              className="w-4 h-4 text-brand-400 shrink-0 transition-colors group-hover/verify:text-brand-300 cursor-pointer"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
                         )}
                         <span className="text-sm text-subtle">
                           @{item.users?.handle || 'unknown'}
                         </span>
-                        <span className="text-subtle">·</span>
-                        <time className="text-sm text-subtle">
-                          {formatDistanceToNow(new Date(item.created_at), {
-                            addSuffix: true,
-                          })}
-                        </time>
                       </div>
-                      <div className="text-text leading-relaxed whitespace-pre-wrap break-words mb-4 text-base">
+                      <time className="text-sm text-subtle block mt-0.5">
+                        {formatDistanceToNow(new Date(item.created_at), {
+                          addSuffix: true,
+                        })}
+                      </time>
+                      <div className="text-text leading-relaxed whitespace-pre-wrap break-words mb-4 text-base mt-2">
                         {item.body}
                       </div>
                       {item.media_url && (
@@ -362,7 +416,7 @@ export default function ItemDetailPage() {
                               </svg>
                             </div>
                             <span className="text-sm whitespace-nowrap">
-                              {item.comments_count || Math.floor(Math.random() * 100)}
+                              {item.comments_count || 0}
                             </span>
                           </button>
 
@@ -374,7 +428,7 @@ export default function ItemDetailPage() {
                               </svg>
                             </div>
                             <span className="text-sm whitespace-nowrap">
-                              {item.retweets_count || Math.floor(Math.random() * 50)}
+                              {item.retweets_count || 0}
                             </span>
                           </button>
 
@@ -398,7 +452,7 @@ export default function ItemDetailPage() {
                               </svg>
                             </div>
                             <span className="text-sm whitespace-nowrap">
-                              {(item.likes_count || Math.floor(Math.random() * 500) + 100) + (isLiked ? 1 : 0)}
+                              {(item.likes_count || 0) + (isLiked ? 1 : 0)}
                             </span>
                           </button>
 
@@ -413,7 +467,7 @@ export default function ItemDetailPage() {
                               />
                             </svg>
                             <span className="text-sm whitespace-nowrap">
-                              {item.views_count || Math.floor(Math.random() * 1000) + 500}
+                              {item.views_count || 0}
                             </span>
                           </div>
 
@@ -451,13 +505,8 @@ export default function ItemDetailPage() {
                       </div>
                     </div>
                   </div>
-                </Card>
+                  </Card>
 
-                {/* Comments Thread (Twitter-style replies) */}
-                <div>
-                  <h3 className="text-xl font-semibold text-text mb-4">Comments</h3>
-                  <CommentThread postId={item.id} />
-                </div>
               </div>
             )}
 
@@ -497,7 +546,7 @@ export default function ItemDetailPage() {
             {activeTab === 'traits' && (
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold text-text mb-4">Traits</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {item.post_features?.emotion && (
                     <Card className="p-4">
                       <div className="text-xs text-muted mb-1">Emotion</div>
@@ -563,20 +612,63 @@ export default function ItemDetailPage() {
           </Card>
         </div>
 
-        {/* More from Collection */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-text mb-6">
-            More from this collection
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {/* TODO: Fetch more items from same collection */}
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="aspect-square bg-elev p-4 flex items-center justify-center">
-                <span className="text-4xl opacity-40">🧠</span>
-              </Card>
-            ))}
-          </div>
+        {/* Comments Thread - Always visible */}
+        <div className="mt-6 md:mt-12">
+          <Card className="p-4 sm:p-6 md:p-8">
+            <h3 className="text-xl md:text-2xl font-semibold text-text mb-4 md:mb-6">Comments</h3>
+            <CommentThread 
+              postId={item.id} 
+              commentsCount={item.comments_count || 0}
+            />
+          </Card>
         </div>
+
+        {/* More from Collection */}
+        {relatedItems && relatedItems.length > 0 && (
+          <div className="mt-6 md:mt-12">
+            <h2 className="text-xl md:text-2xl font-bold text-text mb-4 md:mb-6">
+              More from @{item.users?.handle || 'this creator'}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+              {relatedItems.map((relatedItem: any) => {
+                const itemSlug = relatedItem.id || relatedItem.body?.replace(/\s+/g, '-').toLowerCase().substring(0, 50);
+                return (
+                  <NFTCard
+                    key={relatedItem.id}
+                    id={relatedItem.id}
+                    image={relatedItem.media_url}
+                    title={
+                      relatedItem.body
+                        ? relatedItem.body.substring(0, 50) + (relatedItem.body.length > 50 ? '...' : '')
+                        : 'Neural Thought'
+                    }
+                    body={relatedItem.body}
+                    emotion={relatedItem.post_features?.emotion?.tone}
+                    price={
+                      relatedItem.price_wei
+                        ? (Number(relatedItem.price_wei) / 1e18).toFixed(4)
+                        : '0'
+                    }
+                    creator={relatedItem.users?.display_name || relatedItem.users?.handle || 'unknown'}
+                    creatorHandle={relatedItem.users?.handle}
+                    creatorAvatar={relatedItem.users?.avatar_url}
+                    creatorVerified={relatedItem.users?.verified || false}
+                    createdAt={relatedItem.created_at}
+                    comments={relatedItem.comments_count || 0}
+                    retweets={relatedItem.retweets_count || 0}
+                    likes={relatedItem.likes_count || 0}
+                    views={relatedItem.views_count || 0}
+                    scarcity={relatedItem.edition_type || '1of1'}
+                    left={
+                      relatedItem.editions ? relatedItem.editions - (relatedItem.sold || 0) : undefined
+                    }
+                    onCollect={() => {}}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
     </>

@@ -6,6 +6,7 @@ import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { config } from '@/lib/wagmi-config';
 import { useState } from 'react';
+import { SidebarProvider } from '@/lib/sidebar-context';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -27,7 +28,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          {children}
+          <SidebarProvider>
+            {children}
+          </SidebarProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

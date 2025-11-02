@@ -2,6 +2,7 @@
 
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/layout/Header';
+import { LeftRail } from '@/components/layout/LeftRail';
 
 export default function HelpPage() {
   return (
@@ -59,8 +60,9 @@ export default function HelpPage() {
             </Card>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -53,7 +53,7 @@ export default function MarketplacePage() {
   return (
     <>
       <LeftRail />
-      <div className="ml-16 group-hover:ml-64 mr-80 min-h-screen transition-all duration-300 ease-in-out">
+      <div className="ml-0 md:ml-16 md:group-hover:ml-64 mr-0 lg:mr-80 min-h-screen transition-all duration-300 ease-in-out">
         {/* Collection Header */}
         <CollectionHeader
         name="Neural Thoughts"
@@ -67,7 +67,7 @@ export default function MarketplacePage() {
         owners={owners}
       />
 
-      <div className="px-6 pb-8">
+      <div className="px-4 md:px-6 pb-8">
         <div className="max-w-7xl mx-auto">
           {/* Tabs */}
           <MarketplaceTabs activeTab={activeTab} onTabChange={setActiveTab} />
@@ -96,7 +96,7 @@ export default function MarketplacePage() {
                   <div className="text-sm">Discovering neurons across the network</div>
                 </div>
               ) : items?.items?.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
                   {items.items.map((item: any) => (
                     <NFTCard
                       key={item.id}

@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { useAccount } from 'wagmi';
 import { Avatar2D } from '../profile/Avatar2D';
+import { useState } from 'react';
+import { useSidebar } from '@/lib/sidebar-context';
 
 // SVG Icon Components
 const FeedIcon = ({ className }: { className?: string }) => (
@@ -79,16 +81,47 @@ const secondaryNavItems = [
 export function LeftRail() {
   const pathname = usePathname();
   const { address, isConnected } = useAccount();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { setIsHovered } = useSidebar();
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-16 hover:w-64 border-r border-line bg-panel flex flex-col z-40 transition-all duration-300 ease-in-out group overflow-hidden">
+    <>
+      {/* Mobile Menu Toggle Button */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="fixed top-4 left-4 z-50 md:hidden bg-panel border border-line rounded-lg p-2 text-text hover:bg-panel2 transition-colors"
+        aria-label="Toggle menu"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Hidden on mobile, visible on tablet+ */}
+      <div 
+        className={clsx(
+          'fixed left-0 top-0 h-screen w-16 hover:w-64 border-r border-line bg-panel flex flex-col z-40 transition-all duration-300 ease-in-out group overflow-hidden',
+          'hidden md:flex',
+          mobileMenuOpen && 'md:flex flex'
+        )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
       {/* Logo Section - Collapsed shows icon only */}
       <div className="p-4 border-b border-line">
         <Link href="/" className="flex items-center gap-3 group/link">
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-curiosity flex items-center justify-center text-white shadow-lg shrink-0">
             <BrainIcon className="w-5 h-5" />
           </div>
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
+          <div className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
             <h1 className="text-lg font-bold text-text tracking-tight">
               ThreadMint
             </h1>
@@ -118,7 +151,7 @@ export function LeftRail() {
                 'w-5 h-5 shrink-0 transition-transform',
                 isActive && 'text-brand-400'
               )} />
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden flex-1 min-w-0">
+              <div className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden flex-1 min-w-0">
                 <div className={clsx(
                   'font-medium text-sm',
                   isActive ? 'text-brand-400' : 'text-text'
@@ -158,7 +191,7 @@ export function LeftRail() {
               title={item.label}
             >
               <Icon className="w-5 h-5 shrink-0" />
-              <span className="font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
+              <span className="font-medium opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
                 {item.label}
               </span>
             </Link>
@@ -182,7 +215,7 @@ export function LeftRail() {
               title="My Profile"
             >
               <Avatar2D name={address} size="sm" />
-              <div className="flex-1 min-w-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
+              <div className="flex-1 min-w-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
                 <div className="font-medium text-sm text-text truncate">
                   {address.slice(0, 6)}...{address.slice(-4)}
                 </div>
@@ -192,7 +225,21 @@ export function LeftRail() {
           </div>
         </>
       )}
-    </div>
+
+      {/* Mobile Close Button */}
+      {mobileMenuOpen && (
+        <button
+          onClick={() => setMobileMenuOpen(false)}
+          className="absolute top-4 right-4 z-50 md:hidden text-text bg-panel border border-line rounded-lg p-2 hover:bg-panel2"
+          aria-label="Close menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      )}
+      </div>
+    </>
   );
 }
 

@@ -2,7 +2,6 @@
 
 import { NFTCard } from '@/components/market/NFTCard';
 import { CollectionHeader } from '@/components/market/CollectionHeader';
-import { CollectionBanner } from '@/components/market/CollectionBanner';
 import { MarketplaceFilters } from '@/components/market/MarketplaceFilters';
 import { MarketplaceTabs } from '@/components/market/MarketplaceTabs';
 import { Header } from '@/components/layout/Header';
@@ -10,6 +9,12 @@ import { LeftRail } from '@/components/layout/LeftRail';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/Card';
 import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+
+const CollectionBanner = dynamic(() => import('@/components/market/CollectionBanner').then(m => ({ default: m.CollectionBanner })), {
+  ssr: false,
+  loading: () => <div className="h-48 md:h-64 lg:h-80 bg-gradient-to-br from-brand-900/40 via-curiosity-900/30 to-brand-900/40 animate-pulse" />
+});
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('items');
@@ -94,12 +99,12 @@ export default function Home() {
   return (
     <>
       <LeftRail />
-      <div className="ml-16 group-hover:ml-64 mr-80 min-h-screen transition-all duration-300 ease-in-out">
+      <div className="ml-0 md:ml-16 md:group-hover:ml-64 mr-0 lg:mr-80 min-h-screen transition-all duration-300 ease-in-out">
         {/* Top Header with Wallet Connection */}
         <Header />
       
-      {/* Collection Banner */}
-      <div className="pt-16">
+      {/* Collection Banner - Lazy loaded */}
+      <div className="pt-14 md:pt-16">
         <CollectionBanner />
       </div>
       
@@ -116,10 +121,10 @@ export default function Home() {
         owners={stats.owners}
       />
 
-      <div className="px-6 pb-8">
+      <div className="px-4 md:px-6 pb-8">
         <div className="max-w-7xl mx-auto">
           {/* Feed Indicator */}
-          <div className="mb-4 flex items-center gap-2 text-sm text-muted">
+          <div className="mb-4 flex items-center gap-2 text-xs md:text-sm text-muted">
             <span>📡</span>
             <span>Showing minted neurons from creators in your feed</span>
           </div>
@@ -150,8 +155,8 @@ export default function Home() {
                   <div className="text-lg font-medium mb-2">Loading posts...</div>
                   <div className="text-sm">Discovering minted neurons</div>
                 </div>
-              ) : mintedItems && mintedItems.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                  ) : mintedItems && mintedItems.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
                   {mintedItems.map((item: any) => (
                     <NFTCard
                       key={item.id}
@@ -174,10 +179,10 @@ export default function Home() {
                       creatorAvatar={item.users?.avatar_url}
                       creatorVerified={item.users?.verified || false}
                       createdAt={item.created_at}
-                      comments={item.comments_count || Math.floor(Math.random() * 100)}
-                      retweets={item.retweets_count || Math.floor(Math.random() * 50)}
-                      likes={item.likes_count || Math.floor(Math.random() * 500) + 100}
-                      views={item.views_count || Math.floor(Math.random() * 1000) + 500}
+                      comments={item.comments_count || 0}
+                      retweets={item.retweets_count || 0}
+                      likes={item.likes_count || 0}
+                      views={item.views_count || 0}
                       scarcity={item.edition_type || '1of1'}
                       left={
                         item.editions ? item.editions - (item.sold || 0) : undefined

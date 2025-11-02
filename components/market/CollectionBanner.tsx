@@ -18,42 +18,43 @@ function seededRandom(seed: number) {
 
 export function CollectionBanner({ 
   imageUrl,
-  alt = 'ThreadMint Neural Network - Where\'s the Neuron?'
+  alt = 'Where\'s Wally - Neural Workers inside a Brain'
 }: CollectionBannerProps) {
-  const [neurons, setNeurons] = useState<any[]>([]);
+  const [workers, setWorkers] = useState<any[]>([]);
   const [pathways, setPathways] = useState<any[]>([]);
 
-  // Generate neurons only on client side to avoid hydration mismatch
+  // Generate workers only on client side to avoid hydration mismatch
   useEffect(() => {
     const random = seededRandom(12345); // Fixed seed for consistency
     
-    const generateNeurons = (count: number) => {
+    const generateWorkers = (count: number) => {
+      const workerTypes = ['typewriter', 'desk', 'lab', 'data', 'network'];
       return Array.from({ length: count }, (_, i) => ({
         id: i,
-        x: random() * 100,
-        y: random() * 100,
-        size: random() * 8 + 4, // 4-12px
-        opacity: random() * 0.6 + 0.4, // 0.4-1.0
-        pulse: random() * 2 + 1, // Animation delay
+        x: random() * 85 + 7.5, // Keep within brain bounds
+        y: random() * 75 + 12.5,
+        type: workerTypes[Math.floor(random() * workerTypes.length)],
+        size: random() * 6 + 8, // 8-14px
+        rotation: random() * 360,
         color: ['brand', 'curiosity', 'joy', 'calm', 'awe'][Math.floor(random() * 5)],
       }));
     };
 
     const generatePathways = (count: number) => {
       return Array.from({ length: count }, () => {
-        const x1 = random() * 100;
-        const y1 = random() * 100;
+        const x1 = random() * 85 + 7.5;
+        const y1 = random() * 75 + 12.5;
         return {
           x1,
           y1,
-          x2: x1 + (random() - 0.5) * 30,
-          y2: y1 + (random() - 0.5) * 30,
+          x2: x1 + (random() - 0.5) * 25,
+          y2: y1 + (random() - 0.5) * 25,
         };
       });
     };
 
-    setNeurons(generateNeurons(150));
-    setPathways(generatePathways(80));
+    setWorkers(generateWorkers(40)); // Fewer workers, more detailed
+    setPathways(generatePathways(60));
   }, []);
   const brainOutline = [
     { x: 30, y: 10 },
@@ -73,9 +74,127 @@ export function CollectionBanner({
     { x: 30, y: 10 },
   ];
 
+  const colorMap = {
+    brand: 'rgba(32, 129, 226, 0.9)',
+    curiosity: 'rgba(166, 128, 255, 0.9)',
+    joy: 'rgba(251, 191, 36, 0.9)',
+    calm: 'rgba(52, 211, 153, 0.9)',
+    awe: 'rgba(236, 72, 153, 0.9)',
+  };
+
+  const renderWorker = (worker: any) => {
+    const { x, y, type, size, rotation, color } = worker;
+    const baseColor = colorMap[color as keyof typeof colorMap];
+
+    return (
+      <g
+        key={worker.id}
+        transform={`translate(${x}%, ${y}%) rotate(${rotation})`}
+      >
+        {type === 'typewriter' && (
+          <>
+            {/* Typewriter body */}
+            <rect x="-8" y="-4" width="16" height="8" rx="2" fill={baseColor} opacity="0.8" />
+            {/* Keyboard keys */}
+            <rect x="-6" y="2" width="3" height="2" rx="0.5" fill={baseColor} opacity="0.9" />
+            <rect x="-2" y="2" width="3" height="2" rx="0.5" fill={baseColor} opacity="0.9" />
+            <rect x="2" y="2" width="3" height="2" rx="0.5" fill={baseColor} opacity="0.9" />
+            {/* Paper scroll */}
+            <rect x="-7" y="-6" width="14" height="2" rx="1" fill="white" opacity="0.9" />
+            {/* Neural data lines */}
+            <path
+              d="M -6 -6 Q 0 -10 6 -6"
+              stroke="white"
+              strokeWidth="0.5"
+              fill="none"
+              opacity="0.6"
+            />
+          </>
+        )}
+        {type === 'desk' && (
+          <>
+            {/* Desk */}
+            <rect x="-10" y="0" width="20" height="4" rx="1" fill={baseColor} opacity="0.7" />
+            {/* Worker figure (simplified) */}
+            <circle cx="0" cy="-6" r="4" fill={baseColor} opacity="0.8" />
+            <rect x="-2" y="-2" width="4" height="6" rx="1" fill={baseColor} opacity="0.8" />
+            {/* Neural signals */}
+            <circle cx="-8" cy="2" r="2" fill="white" opacity="0.7">
+              <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="8" cy="2" r="2" fill="white" opacity="0.7">
+              <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite" />
+            </circle>
+          </>
+        )}
+        {type === 'lab' && (
+          <>
+            {/* Lab equipment */}
+            <circle cx="0" cy="0" r="6" fill="none" stroke={baseColor} strokeWidth="2" opacity="0.8" />
+            <circle cx="0" cy="0" r="3" fill={baseColor} opacity="0.6">
+              <animate attributeName="r" values="3;4;3" dur="3s" repeatCount="indefinite" />
+            </circle>
+            {/* Neural connections */}
+            <line x1="-6" y1="-6" x2="6" y2="6" stroke="white" strokeWidth="1" opacity="0.5" />
+            <line x1="6" y1="-6" x2="-6" y2="6" stroke="white" strokeWidth="1" opacity="0.5" />
+          </>
+        )}
+        {type === 'data' && (
+          <>
+            {/* Data processing unit */}
+            <rect x="-6" y="-6" width="12" height="12" rx="2" fill={baseColor} opacity="0.7" />
+            {/* Data lines */}
+            {[0, 1, 2, 3].map((i) => (
+              <line
+                key={i}
+                x1={-6 + i * 4}
+                y1="-6"
+                x2={-6 + i * 4}
+                y2="6"
+                stroke="white"
+                strokeWidth="1"
+                opacity="0.6"
+              />
+            ))}
+            {/* Processing indicator */}
+            <circle cx="0" cy="0" r="2" fill="white" opacity="0.9">
+              <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite" />
+            </circle>
+          </>
+        )}
+        {type === 'network' && (
+          <>
+            {/* Network node */}
+            <circle cx="0" cy="0" r="5" fill={baseColor} opacity="0.8">
+              <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite" />
+            </circle>
+            {/* Connections */}
+            {[0, 1, 2, 3, 4].map((i) => {
+              const angle = (i / 5) * Math.PI * 2;
+              const x2 = Math.cos(angle) * 8;
+              const y2 = Math.sin(angle) * 8;
+              return (
+                <line
+                  key={i}
+                  x1="0"
+                  y1="0"
+                  x2={x2}
+                  y2={y2}
+                  stroke="white"
+                  strokeWidth="1"
+                  opacity="0.5"
+                />
+              );
+            })}
+          </>
+        )}
+      </g>
+    );
+  };
+
   return (
-    <div className="relative w-full h-80 overflow-hidden">
-      {/* Custom "Where's the Neuron" Banner */}
+    <div className="relative w-full h-48 md:h-64 lg:h-80 overflow-hidden">
+      {/* Custom "Where's Wally" Neural Workers Banner */}
       {imageUrl ? (
         <img
           src={imageUrl}
@@ -94,12 +213,12 @@ export function CollectionBanner({
             {/* Brain silhouette */}
             <path
               d={`M ${brainOutline.map(p => `${p.x}% ${p.y}%`).join(' L ')} Z`}
-              fill="rgba(32, 129, 226, 0.1)"
-              stroke="rgba(166, 128, 255, 0.2)"
-              strokeWidth="2"
+              fill="rgba(32, 129, 226, 0.15)"
+              stroke="rgba(166, 128, 255, 0.3)"
+              strokeWidth="3"
             />
             
-            {/* Neural pathways - lots of connections */}
+            {/* Neural pathways connecting workers */}
             {pathways.map((path, i) => (
               <line
                 key={`path-${i}`}
@@ -107,98 +226,50 @@ export function CollectionBanner({
                 y1={`${path.y1}%`}
                 x2={`${path.x2}%`}
                 y2={`${path.y2}%`}
-                stroke="rgba(166, 128, 255, 0.15)"
-                strokeWidth="1"
-              />
+                stroke="rgba(166, 128, 255, 0.2)"
+                strokeWidth="1.5"
+              >
+                <animate
+                  attributeName="opacity"
+                  values="0.1;0.3;0.1"
+                  dur={`${3 + (i % 3)}s`}
+                  repeatCount="indefinite"
+                />
+              </line>
             ))}
             
-            {/* Scattered neurons everywhere - "Where's Wally" style */}
-            {neurons.length > 0 && neurons.map((neuron) => {
-              const colorMap = {
-                brand: 'rgba(32, 129, 226, 0.8)',
-                curiosity: 'rgba(166, 128, 255, 0.8)',
-                joy: 'rgba(251, 191, 36, 0.8)',
-                calm: 'rgba(52, 211, 153, 0.8)',
-                awe: 'rgba(236, 72, 153, 0.8)',
-              };
-              
-              return (
-                <g key={neuron.id}>
-                  {/* Neuron glow */}
-                  <circle
-                    cx={`${neuron.x}%`}
-                    cy={`${neuron.y}%`}
-                    r={neuron.size * 1.5}
-                    fill={colorMap[neuron.color as keyof typeof colorMap]}
-                    opacity={neuron.opacity * 0.3}
-                  >
-                    <animate
-                      attributeName="opacity"
-                      values={`${neuron.opacity * 0.3};${neuron.opacity * 0.6};${neuron.opacity * 0.3}`}
-                      dur={`${neuron.pulse}s`}
-                      repeatCount="indefinite"
-                    />
-                  </circle>
-                  {/* Neuron core */}
-                  <circle
-                    cx={`${neuron.x}%`}
-                    cy={`${neuron.y}%`}
-                    r={neuron.size}
-                    fill={colorMap[neuron.color as keyof typeof colorMap]}
-                    opacity={neuron.opacity}
-                  >
-                    <animate
-                      attributeName="r"
-                      values={`${neuron.size};${neuron.size * 1.2};${neuron.size}`}
-                      dur={`${neuron.pulse * 0.8}s`}
-                      repeatCount="indefinite"
-                    />
-                  </circle>
-                  {/* Neuron firing effect */}
-                  <circle
-                    cx={`${neuron.x}%`}
-                    cy={`${neuron.y}%`}
-                    r={neuron.size * 0.5}
-                    fill="white"
-                    opacity={neuron.opacity * 0.9}
-                  >
-                    <animate
-                      attributeName="opacity"
-                      values={`0;1;0`}
-                      dur={`${neuron.pulse * 0.5}s`}
-                      repeatCount="indefinite"
-                    />
-                  </circle>
-                </g>
-              );
-            })}
+            {/* Workers doing neuron work - "Where's Wally" style */}
+            {workers.length > 0 && workers.map(renderWorker)}
             
-            {/* Special "Waldo" neuron - different, standing out */}
-            <g className="animate-pulse">
-              <circle
-                cx="75%"
-                cy="35%"
-                r="12"
-                fill="rgba(251, 191, 36, 0.9)"
-                stroke="white"
-                strokeWidth="3"
+            {/* Special "Waldo" worker - at typewriter, different color, more prominent */}
+            <g className="animate-pulse" transform="translate(72%, 32%)">
+              {/* Waldo's typewriter */}
+              <rect x="-10" y="-5" width="20" height="10" rx="3" fill="rgba(251, 191, 36, 0.9)" stroke="white" strokeWidth="2" />
+              {/* Typewriter keys */}
+              <rect x="-8" y="3" width="3" height="2.5" rx="0.5" fill="rgba(251, 191, 36, 1)" />
+              <rect x="-3" y="3" width="3" height="2.5" rx="0.5" fill="rgba(251, 191, 36, 1)" />
+              <rect x="2" y="3" width="3" height="2.5" rx="0.5" fill="rgba(251, 191, 36, 1)" />
+              {/* Paper with neural data */}
+              <rect x="-9" y="-8" width="18" height="3" rx="1" fill="white" opacity="0.95" />
+              <path
+                d="M -8 -7 Q 0 -12 8 -7"
+                stroke="rgba(166, 128, 255, 0.9)"
+                strokeWidth="1.5"
+                fill="none"
               />
-              <circle
-                cx="75%"
-                cy="35%"
-                r="6"
-                fill="white"
-              />
-              {/* Special firing effect for the special neuron */}
-              {Array.from({ length: 8 }).map((_, i) => {
-                const angle = (i / 8) * Math.PI * 2;
-                const x = 75 + Math.cos(angle) * 20;
-                const y = 35 + Math.sin(angle) * 20;
+              {/* Waldo figure (simplified) */}
+              <circle cx="0" cy="-12" r="5" fill="rgba(251, 191, 36, 0.9)" stroke="white" strokeWidth="2" />
+              <rect x="-3" y="-7" width="6" height="8" rx="2" fill="rgba(251, 191, 36, 0.9)" />
+              {/* Neural signals pulsing */}
+              {Array.from({ length: 6 }).map((_, i) => {
+                const angle = (i / 6) * Math.PI * 2;
+                const x = Math.cos(angle) * 15;
+                const y = Math.sin(angle) * 15;
                 return (
                   <circle
-                    key={`spark-${i}`}
-                    cx={`${x}%`}
-                    cy={`${y}%`}
+                    key={`waldo-spark-${i}`}
+                    cx={x}
+                    cy={y}
                     r="2"
                     fill="rgba(251, 191, 36, 1)"
                     opacity="0"
@@ -207,7 +278,7 @@ export function CollectionBanner({
                       attributeName="opacity"
                       values="0;1;0"
                       dur="2s"
-                      begin={`${i * 0.25}s`}
+                      begin={`${i * 0.33}s`}
                       repeatCount="indefinite"
                     />
                   </circle>
@@ -218,10 +289,10 @@ export function CollectionBanner({
           
           {/* Overlay text hint */}
           <div className="absolute bottom-4 right-4 text-xs text-muted/60 font-medium bg-bg/60 px-3 py-1.5 rounded-full backdrop-blur-sm">
-            🧠 Find the special neuron!
+            🎯 Find Waldo working on the neural network!
           </div>
           
-          {/* Decorative brain elements */}
+          {/* Decorative elements */}
           <div className="absolute top-8 left-8 text-6xl opacity-10 rotate-12">🧠</div>
           <div className="absolute bottom-12 left-16 text-5xl opacity-10 -rotate-12">⚡</div>
           <div className="absolute top-16 right-12 text-5xl opacity-10 rotate-12">💭</div>

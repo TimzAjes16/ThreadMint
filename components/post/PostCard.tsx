@@ -46,11 +46,10 @@ export function PostCard({
           className="h-10 w-10 rounded-full object-cover"
         />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-sm text-subtle">
+          <div className="text-sm text-subtle">
             <span className="text-text font-semibold">@{handle}</span>
-            <span>·</span>
-            <time>{timeStr}</time>
           </div>
+          <time className="text-sm text-subtle block mt-0.5">{timeStr}</time>
           <p className="mt-2 text-[15px] leading-6 text-text whitespace-pre-wrap break-words">
             {body}
           </p>

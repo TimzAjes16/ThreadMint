@@ -21,9 +21,9 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <Card className="w-full max-w-md my-auto bg-panel border-2 border-line shadow-2xl">
-        <div className="p-8">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+      <Card className="w-full max-w-md my-auto bg-panel border-2 border-line shadow-2xl mx-2 sm:mx-0 max-h-[95vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 md:p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-text">Create Account</h2>
             <button

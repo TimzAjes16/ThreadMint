@@ -2,6 +2,8 @@
 
 import { NFTCard } from '@/components/market/NFTCard';
 import { PostCard } from '@/components/post/PostCard';
+import { Header } from '@/components/layout/Header';
+import { LeftRail } from '@/components/layout/LeftRail';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
@@ -18,43 +20,47 @@ export default function DiscoverPage() {
   });
 
   return (
-    <div className="ml-64 mr-80 min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-text mb-2">Discover</h1>
-            <p className="text-sm text-subtle">
-              Find neurons that resonate with you
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setView('grid')}
-              className={`px-4 py-2 rounded-md border ${
-                view === 'grid'
-                  ? 'bg-brand-500/20 border-brand-500 text-brand-400'
-                  : 'bg-panel2 border-line text-muted'
-              }`}
-            >
-              Grid
-            </button>
-            <button
-              onClick={() => setView('feed')}
-              className={`px-4 py-2 rounded-md border ${
-                view === 'feed'
-                  ? 'bg-brand-500/20 border-brand-500 text-brand-400'
-                  : 'bg-panel2 border-line text-muted'
-              }`}
-            >
-              Feed
-            </button>
-          </div>
-        </div>
+    <>
+      <LeftRail />
+      <div className="ml-0 md:ml-16 md:group-hover:ml-64 mr-0 lg:mr-80 min-h-screen transition-all duration-300 ease-in-out">
+        <Header />
+        <div className="pt-14 md:pt-16 px-4 md:px-6 pb-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">Discover</h1>
+                <p className="text-xs md:text-sm text-subtle">
+                  Find neurons that resonate with you
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setView('grid')}
+                  className={`px-3 md:px-4 py-2 rounded-md border text-xs md:text-sm ${
+                    view === 'grid'
+                      ? 'bg-brand-500/20 border-brand-500 text-brand-400'
+                      : 'bg-panel2 border-line text-muted'
+                  }`}
+                >
+                  Grid
+                </button>
+                <button
+                  onClick={() => setView('feed')}
+                  className={`px-3 md:px-4 py-2 rounded-md border text-xs md:text-sm ${
+                    view === 'feed'
+                      ? 'bg-brand-500/20 border-brand-500 text-brand-400'
+                      : 'bg-panel2 border-line text-muted'
+                  }`}
+                >
+                  Feed
+                </button>
+              </div>
+            </div>
 
-        {isLoading ? (
-          <div className="text-center text-subtle py-12">Loading...</div>
-        ) : view === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {isLoading ? (
+              <div className="text-center text-subtle py-12">Loading...</div>
+            ) : view === 'grid' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {items?.items?.map((item: any) => (
               <NFTCard
                 key={item.id}
@@ -107,10 +113,12 @@ export default function DiscoverPage() {
                 onCollect={() => {}}
               />
             ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
