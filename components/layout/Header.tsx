@@ -16,7 +16,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-16 group-hover:left-64 right-80 z-50 bg-bg/95 backdrop-blur-sm border-b border-line transition-all duration-300 ease-in-out">
-      <div className="flex items-center justify-between px-6 h-16">
+      <div className="flex items-center justify-between px-6 h-16 w-full">
         {/* Search - placeholder for now */}
         <div className="flex-1 max-w-md">
           <div className="relative">
@@ -42,7 +42,7 @@ export function Header() {
         </div>
 
         {/* Right side: Profile & Wallet Connection */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0 ml-auto">
           {/* Profile Picture / User Menu */}
           <UserMenu onLoginClick={() => setShowLogin(true)} />
 
