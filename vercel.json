@@ -1,0 +1,13 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/reactions",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/mind-aggregate",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}
+
