@@ -54,19 +54,29 @@ export default function DiscoverPage() {
         {isLoading ? (
           <div className="text-center text-subtle py-12">Loading...</div>
         ) : view === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {items?.items?.map((item: any) => (
               <NFTCard
                 key={item.id}
+                id={item.id}
                 image={item.media_url}
                 title={item.body?.substring(0, 30) || 'Neuron'}
+                body={item.body}
                 emotion={item.post_features?.emotion?.tone}
                 price={
                   item.price_wei
                     ? (Number(item.price_wei) / 1e18).toFixed(4)
                     : '0'
                 }
-                creator={item.users?.handle || 'unknown'}
+                creator={item.users?.display_name || item.users?.handle || 'unknown'}
+                creatorHandle={item.users?.handle}
+                creatorAvatar={item.users?.avatar_url}
+                creatorVerified={item.users?.verified || false}
+                createdAt={item.created_at}
+                comments={item.comments_count || Math.floor(Math.random() * 100)}
+                retweets={item.retweets_count || Math.floor(Math.random() * 50)}
+                likes={item.likes_count || Math.floor(Math.random() * 500) + 100}
+                views={item.views_count || Math.floor(Math.random() * 1000) + 500}
                 scarcity={item.edition_type || '1of1'}
                 left={item.editions ? item.editions - item.sold : undefined}
                 onCollect={() => {}}

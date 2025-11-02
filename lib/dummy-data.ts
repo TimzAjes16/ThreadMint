@@ -8,6 +8,25 @@ const calculateTotalSupply = (posts: any[]) => {
   }, 0);
 };
 
+// Seeded random for consistent engagement metrics
+function seededRandom(seed: number) {
+  return () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+}
+
+// Helper to generate engagement metrics with seeded random for consistency
+const generateEngagement = (id: number) => {
+  const random = seededRandom(id * 1000);
+  return {
+    comments_count: Math.floor(random() * 100) + 10,
+    retweets_count: Math.floor(random() * 50) + 5,
+    likes_count: Math.floor(random() * 500) + 50,
+    views_count: Math.floor(random() * 2000) + 500,
+  };
+};
+
 export const dummyPosts = [
   {
     id: '1',
@@ -28,7 +47,9 @@ export const dummyPosts = [
       handle: 'philosopher_crypto',
       display_name: 'Crypto Philosopher',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=philosopher',
+      verified: true,
     },
+    ...generateEngagement(1),
     post_features: {
       emotion: { tone: 'curiosity', valence: 0.7, arousal: 0.5 },
       influence_score: 8.5,
@@ -53,7 +74,9 @@ export const dummyPosts = [
       handle: 'base_builder',
       display_name: 'Base Builder',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=base',
+      verified: true,
     },
+    ...generateEngagement(2),
     post_features: {
       emotion: { tone: 'joy', valence: 0.9, arousal: 0.8 },
       influence_score: 9.2,
@@ -78,7 +101,9 @@ export const dummyPosts = [
       handle: 'neural_artist',
       display_name: 'Neural Artist',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=artist',
+      verified: false,
     },
+    ...generateEngagement(3),
     post_features: {
       emotion: { tone: 'awe', valence: 0.8, arousal: 0.6 },
       influence_score: 7.8,
@@ -103,7 +128,9 @@ export const dummyPosts = [
       handle: 'minimalist_thinker',
       display_name: 'Minimalist Thinker',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=minimal',
+      verified: false,
     },
+    ...generateEngagement(4),
     post_features: {
       emotion: { tone: 'calm', valence: 0.6, arousal: 0.3 },
       influence_score: 6.5,
@@ -128,7 +155,9 @@ export const dummyPosts = [
       handle: 'ai_philosopher',
       display_name: 'AI Philosopher',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ai',
+      verified: true,
     },
+    ...generateEngagement(5),
     post_features: {
       emotion: { tone: 'curiosity', valence: 0.75, arousal: 0.7 },
       influence_score: 9.0,
@@ -153,7 +182,9 @@ export const dummyPosts = [
       handle: 'web3_poet',
       display_name: 'Web3 Poet',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=poet',
+      verified: true,
     },
+    ...generateEngagement(6),
     post_features: {
       emotion: { tone: 'awe', valence: 0.85, arousal: 0.65 },
       influence_score: 8.8,
@@ -178,7 +209,9 @@ export const dummyPosts = [
       handle: 'solidity_symphony',
       display_name: 'Solidity Symphony',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=solidity',
+      verified: false,
     },
+    ...generateEngagement(7),
     post_features: {
       emotion: { tone: 'joy', valence: 0.8, arousal: 0.75 },
       influence_score: 7.5,
@@ -203,7 +236,9 @@ export const dummyPosts = [
       handle: 'eternal_thoughts',
       display_name: 'Eternal Thoughts',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=eternal',
+      verified: true,
     },
+    ...generateEngagement(8),
     post_features: {
       emotion: { tone: 'awe', valence: 0.9, arousal: 0.6 },
       influence_score: 8.2,
@@ -228,7 +263,9 @@ export const dummyPosts = [
       handle: 'threadmint_creator',
       display_name: 'ThreadMint Creator',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=creator',
+      verified: true,
     },
+    ...generateEngagement(9),
     post_features: {
       emotion: { tone: 'curiosity', valence: 0.85, arousal: 0.8 },
       influence_score: 9.5,
@@ -253,7 +290,9 @@ export const dummyPosts = [
       handle: 'creator_power',
       display_name: 'Creator Power',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=power',
+      verified: true,
     },
+    ...generateEngagement(10),
     post_features: {
       emotion: { tone: 'joy', valence: 0.85, arousal: 0.85 },
       influence_score: 8.9,
@@ -278,7 +317,9 @@ export const dummyPosts = [
       handle: 'cosmic_whispers',
       display_name: 'Cosmic Whispers',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=cosmic',
+      verified: false,
     },
+    ...generateEngagement(11),
     post_features: {
       emotion: { tone: 'calm', valence: 0.7, arousal: 0.4 },
       influence_score: 7.2,
@@ -303,7 +344,9 @@ export const dummyPosts = [
       handle: 'neural_network',
       display_name: 'Neural Network',
       avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=neural',
+      verified: true,
     },
+    ...generateEngagement(12),
     post_features: {
       emotion: { tone: 'curiosity', valence: 0.8, arousal: 0.7 },
       influence_score: 8.0,

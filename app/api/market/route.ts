@@ -71,14 +71,30 @@ export async function GET(request: NextRequest) {
         }, 0);
       };
 
-      return NextResponse.json({ 
-        items: filtered,
+      // Apply pagination if limit is provided
+      const limit = parseInt(searchParams.get('limit') || filtered.length.toString());
+      const offset = parseInt(searchParams.get('offset') || '0');
+      const paginated = filtered.slice(offset, offset + limit);
+
+      const response = NextResponse.json({ 
+        items: paginated,
         stats: {
           totalSupply: calculateTotalSupply(filtered),
           listed: filtered.filter((item: any) => item.price_wei).length,
           owners: new Set(filtered.map((item: any) => item.users?.handle).filter(Boolean)).size,
+        },
+        pagination: {
+          total: filtered.length,
+          limit,
+          offset,
+          hasMore: offset + limit < filtered.length,
         }
       });
+
+      // Add cache headers for better performance
+      response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+      
+      return response;
     }
 
     // Import Supabase only if needed

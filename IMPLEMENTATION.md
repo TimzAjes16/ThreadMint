@@ -25,15 +25,26 @@
 - [x] CreatePost component
 - [x] MindMini component (sidebar preview)
 - [x] Layout components (LeftRail, RightRail, FeedLayout)
+- [x] Header component (with Connect Wallet button and profile picture)
+- [x] UserMenu component (profile dropdown with auth options)
+- [x] LoginModal component (email/password login)
+- [x] SignupModal component (user registration)
+- [x] CollectionBanner component (neural-themed "Where's Wally" style banner)
+- [x] CollectionHeader component (collection stats and info)
+- [x] MarketplaceFilters component
+- [x] MarketplaceTabs component
 
 ### Pages
-- [x] Home/Feed page
+- [x] Home/Feed page (with collection banner, OpenSea-style grid)
 - [x] Marketplace page with filters
 - [x] Discover page
 - [x] Mind page (3D brain visualization)
 - [x] Leaderboard page
 - [x] Packs page
 - [x] Settings page
+- [x] Profile page (/profile) - User profile with collections and stats
+- [x] Help page (/help) - Support and documentation
+- [x] Item detail page (/item/[id]) - OpenSea-style NFT item page with Twitter post details
 
 ### 3D Brain Components
 - [x] BrainCanvas (React Three Fiber setup)
@@ -86,6 +97,9 @@
 - [x] RainbowKit setup
 - [x] Base chain configuration
 - [x] Providers component
+- [x] Connect Wallet button in header
+- [x] Profile picture/avatar display when connected
+- [x] Network switching support
 
 ### Utilities
 - [x] Supabase client setup
@@ -117,9 +131,14 @@
 - [ ] Test database connections
 
 ### Authentication
+- [x] Login modal UI (email/password)
+- [x] Signup modal UI (user registration)
+- [x] User menu dropdown (profile, settings, help)
+- [x] Profile picture in header (wallet-connected state)
+- [x] Profile page structure
 - [ ] Implement Supabase Auth integration
 - [ ] Link wallet address to user account
-- [ ] Handle user registration/login flow
+- [ ] Handle user registration/login backend flow
 - [ ] Update API routes to use authenticated user context
 
 ### Smart Contracts Deployment

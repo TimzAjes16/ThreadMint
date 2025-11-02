@@ -4,6 +4,7 @@ import { NFTCard } from '@/components/market/NFTCard';
 import { CollectionHeader } from '@/components/market/CollectionHeader';
 import { MarketplaceFilters } from '@/components/market/MarketplaceFilters';
 import { MarketplaceTabs } from '@/components/market/MarketplaceTabs';
+import { LeftRail } from '@/components/layout/LeftRail';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/Card';
 import { useState } from 'react';
@@ -23,14 +24,19 @@ export default function MarketplacePage() {
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters.emotion) params.set('emotion', filters.emotion);
-      if (filters.status !== 'all') params.set('listed', 'true');
+      params.set('listed', filters.status !== 'all' ? 'true' : 'all');
       if (filters.sortBy) params.set('sort', filters.sortBy);
       if (filters.minPrice) params.set('minPrice', filters.minPrice);
       if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      params.set('limit', '24'); // Limit initial load
 
-      const res = await fetch(`/api/market?${params}`);
+      const res = await fetch(`/api/market?${params}`, {
+        next: { revalidate: 300 },
+      });
       return res.json();
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   // Calculate collection stats
@@ -45,9 +51,11 @@ export default function MarketplacePage() {
   const owners = new Set(items?.items?.map((item: any) => item.users?.handle).filter(Boolean)).size || 0;
 
   return (
-    <div className="ml-64 mr-80 min-h-screen">
-      {/* Collection Header */}
-      <CollectionHeader
+    <>
+      <LeftRail />
+      <div className="ml-16 group-hover:ml-64 mr-80 min-h-screen transition-all duration-300 ease-in-out">
+        {/* Collection Header */}
+        <CollectionHeader
         name="Neural Thoughts"
         description="A collection of minted thoughts, quotes, images, and videos from creators across the neural network. Each piece is a unique neuron waiting to be collected and absorbed into your mind."
         creator="ThreadMint"
@@ -88,23 +96,33 @@ export default function MarketplacePage() {
                   <div className="text-sm">Discovering neurons across the network</div>
                 </div>
               ) : items?.items?.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                   {items.items.map((item: any) => (
                     <NFTCard
                       key={item.id}
+                      id={item.id}
                       image={item.media_url}
                       title={
                         item.body
                           ? item.body.substring(0, 50) + (item.body.length > 50 ? '...' : '')
                           : 'Neural Thought'
                       }
+                      body={item.body}
                       emotion={item.post_features?.emotion?.tone}
                       price={
                         item.price_wei
                           ? (Number(item.price_wei) / 1e18).toFixed(4)
                           : '0'
                       }
-                      creator={item.users?.handle || 'unknown'}
+                      creator={item.users?.display_name || item.users?.handle || 'unknown'}
+                      creatorHandle={item.users?.handle}
+                      creatorAvatar={item.users?.avatar_url}
+                      creatorVerified={item.users?.verified || false}
+                      createdAt={item.created_at}
+                      comments={item.comments_count || Math.floor(Math.random() * 100)}
+                      retweets={item.retweets_count || Math.floor(Math.random() * 50)}
+                      likes={item.likes_count || Math.floor(Math.random() * 500) + 100}
+                      views={item.views_count || Math.floor(Math.random() * 1000) + 500}
                       scarcity={item.edition_type || '1of1'}
                       left={
                         item.editions ? item.editions - (item.sold || 0) : undefined
@@ -176,5 +194,6 @@ export default function MarketplacePage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

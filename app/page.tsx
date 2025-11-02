@@ -2,11 +2,14 @@
 
 import { NFTCard } from '@/components/market/NFTCard';
 import { CollectionHeader } from '@/components/market/CollectionHeader';
+import { CollectionBanner } from '@/components/market/CollectionBanner';
 import { MarketplaceFilters } from '@/components/market/MarketplaceFilters';
 import { MarketplaceTabs } from '@/components/market/MarketplaceTabs';
+import { Header } from '@/components/layout/Header';
+import { LeftRail } from '@/components/layout/LeftRail';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/Card';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('items');
@@ -21,13 +24,16 @@ export default function Home() {
     queryKey: ['marketplace', filters],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (filters.status !== 'all') params.set('listed', 'true');
+      params.set('listed', filters.status !== 'all' ? 'true' : 'all');
       if (filters.sortBy) params.set('sort', filters.sortBy);
       if (filters.minPrice) params.set('minPrice', filters.minPrice);
       if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      params.set('limit', '24'); // Limit initial load
 
       try {
-        const res = await fetch(`/api/market?${params}`);
+        const res = await fetch(`/api/market?${params}`, {
+          next: { revalidate: 300 }, // Revalidate every 5 minutes
+        });
         if (!res.ok) throw new Error('Failed to fetch');
         return res.json();
       } catch (error) {
@@ -35,62 +41,89 @@ export default function Home() {
         return { items: [] };
       }
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  // Get minted neurons from items
-  const mintedItems = items?.items?.filter((item: any) => item.minted) || [];
-  
-  // Calculate collection stats from minted neurons
-  const allPrices = mintedItems
-    .filter((item: any) => item.price_wei)
-    .map((item: any) => Number(item.price_wei) / 1e18);
-  const floorPrice = allPrices.length > 0 ? Math.min(...allPrices) : 0;
+  // Memoize calculations for better performance
+  const mintedItems = useMemo(() => {
+    return items?.items?.filter((item: any) => item.minted) || [];
+  }, [items?.items]);
 
-  // Calculate total supply from editions
-  const calculateTotalSupply = (items: any[]) => {
-    return items.reduce((total, item) => {
-      if (item.edition_type === '1of1') return total + 1;
-      if (item.edition_type === 'open') return total + (item.editions || 1000);
-      if (item.edition_type === 'limited') return total + (item.editions || 1);
-      return total + 1;
-    }, 0);
-  };
+  // Calculate collection stats from minted neurons (memoized)
+  const stats = useMemo(() => {
+    const allPrices = mintedItems
+      .filter((item: any) => item.price_wei)
+      .map((item: any) => Number(item.price_wei) / 1e18);
+    const floorPrice = allPrices.length > 0 ? Math.min(...allPrices) : 0;
 
-  // Use stats from API if available, otherwise calculate
-  const totalSupply = items?.stats?.totalSupply || calculateTotalSupply(mintedItems);
-  const listed = items?.stats?.listed || mintedItems.filter((item: any) => item.price_wei).length;
-  const owners = items?.stats?.owners || new Set(
-    mintedItems.map((item: any) => item.users?.handle).filter(Boolean)
-  ).size;
+    const calculateTotalSupply = (items: any[]) => {
+      return items.reduce((total, item) => {
+        if (item.edition_type === '1of1') return total + 1;
+        if (item.edition_type === 'open') return total + (item.editions || 1000);
+        if (item.edition_type === 'limited') return total + (item.editions || 1);
+        return total + 1;
+      }, 0);
+    };
 
-  // Calculate volumes
-  const totalVolume = allPrices.reduce((sum: number, price: number) => sum + price, 0).toFixed(2);
-  
-  // 24h volume (items created in last 24h with prices)
-  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-  const volume24hValue = mintedItems
-    .filter((item: any) => new Date(item.created_at).getTime() > oneDayAgo)
-    .filter((item: any) => item.price_wei)
-    .reduce((sum: number, item: any) => sum + Number(item.price_wei) / 1e18, 0)
-    .toFixed(2);
+    const totalSupply = items?.stats?.totalSupply || calculateTotalSupply(mintedItems);
+    const listed = items?.stats?.listed || mintedItems.filter((item: any) => item.price_wei).length;
+    const owners = items?.stats?.owners || new Set(
+      mintedItems.map((item: any) => item.users?.handle).filter(Boolean)
+    ).size;
+
+    const totalVolume = allPrices.reduce((sum: number, price: number) => sum + price, 0).toFixed(2);
+    
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const volume24hValue = mintedItems
+      .filter((item: any) => new Date(item.created_at).getTime() > oneDayAgo)
+      .filter((item: any) => item.price_wei)
+      .reduce((sum: number, item: any) => sum + Number(item.price_wei) / 1e18, 0)
+      .toFixed(2);
+
+    return {
+      floorPrice: floorPrice.toFixed(4),
+      totalSupply,
+      listed,
+      owners,
+      totalVolume,
+      volume24h: volume24hValue,
+    };
+  }, [mintedItems, items?.stats]);
 
   return (
-    <div className="ml-64 mr-80 min-h-screen">
+    <>
+      <LeftRail />
+      <div className="ml-16 group-hover:ml-64 mr-80 min-h-screen transition-all duration-300 ease-in-out">
+        {/* Top Header with Wallet Connection */}
+        <Header />
+      
+      {/* Collection Banner */}
+      <div className="pt-16">
+        <CollectionBanner />
+      </div>
+      
       {/* Collection Header */}
       <CollectionHeader
-        name="ThreadMint Neural Posts"
-        description="Discover minted thoughts, quotes, images, and videos from creators across the network. Each post is minted as an NFT on Base, ready to be collected and absorbed into your mind."
+        name="Your Neural Feed"
+        description="Minted thoughts, quotes, images, and videos from creators you follow and subscribe to. Each post is minted as an NFT on Base, ready to be collected and absorbed into your mind."
         creator="ThreadMint"
-        floorPrice={floorPrice > 0 ? floorPrice.toFixed(4) : '0'}
-        volume24h={volume24hValue}
-        totalVolume={totalVolume}
-        listed={listed}
-        totalSupply={totalSupply}
-        owners={owners}
+        floorPrice={stats.floorPrice}
+        volume24h={stats.volume24h}
+        totalVolume={stats.totalVolume}
+        listed={stats.listed}
+        totalSupply={stats.totalSupply}
+        owners={stats.owners}
       />
 
       <div className="px-6 pb-8">
         <div className="max-w-7xl mx-auto">
+          {/* Feed Indicator */}
+          <div className="mb-4 flex items-center gap-2 text-sm text-muted">
+            <span>📡</span>
+            <span>Showing minted neurons from creators in your feed</span>
+          </div>
+          
           {/* Tabs */}
           <MarketplaceTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
@@ -118,23 +151,33 @@ export default function Home() {
                   <div className="text-sm">Discovering minted neurons</div>
                 </div>
               ) : mintedItems && mintedItems.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                   {mintedItems.map((item: any) => (
                     <NFTCard
                       key={item.id}
+                      id={item.id}
                       image={item.media_url}
                       title={
                         item.body
                           ? item.body.substring(0, 50) + (item.body.length > 50 ? '...' : '')
                           : 'Neural Thought'
                       }
+                      body={item.body}
                       emotion={item.post_features?.emotion?.tone}
                       price={
                         item.price_wei
                           ? (Number(item.price_wei) / 1e18).toFixed(4)
                           : '0'
                       }
-                      creator={item.users?.handle || 'unknown'}
+                      creator={item.users?.display_name || item.users?.handle || 'unknown'}
+                      creatorHandle={item.users?.handle}
+                      creatorAvatar={item.users?.avatar_url}
+                      creatorVerified={item.users?.verified || false}
+                      createdAt={item.created_at}
+                      comments={item.comments_count || Math.floor(Math.random() * 100)}
+                      retweets={item.retweets_count || Math.floor(Math.random() * 50)}
+                      likes={item.likes_count || Math.floor(Math.random() * 500) + 100}
+                      views={item.views_count || Math.floor(Math.random() * 1000) + 500}
                       scarcity={item.edition_type || '1of1'}
                       left={
                         item.editions ? item.editions - (item.sold || 0) : undefined
@@ -147,10 +190,10 @@ export default function Home() {
                 <Card className="p-16 text-center">
                   <div className="text-5xl mb-4 opacity-50">🧠</div>
                   <div className="text-xl font-semibold text-text mb-2">
-                    No minted posts yet
+                    No minted posts in your feed
                   </div>
                   <div className="text-muted">
-                    Be the first to mint your thought as an NFT
+                    Follow creators to see their minted thoughts appear here, or explore the marketplace to discover new neurons.
                   </div>
                 </Card>
               )}
@@ -183,26 +226,27 @@ export default function Home() {
 
           {activeTab === 'about' && (
             <Card className="p-8">
-              <h2 className="text-2xl font-bold text-text mb-4">About ThreadMint Neural Posts</h2>
+              <h2 className="text-2xl font-bold text-text mb-4">About Your Neural Feed</h2>
               <div className="space-y-4 text-muted leading-relaxed">
                 <p>
-                  ThreadMint Neural Posts is the collection of all thoughts, quotes, images, and videos
-                  that have been minted as NFTs on Base blockchain. Each post represents a unique
-                  neural thought captured from the network.
+                  Your Neural Feed shows minted thoughts, quotes, images, and videos from creators
+                  you follow and subscribe to. This is your personalized view of the ThreadMint network,
+                  showing only the content from creators you're connected with.
                 </p>
                 <p>
-                  When you collect a post, you're absorbing its meaning and emotion into your 3D brain
+                  When you collect a post from your feed, you're absorbing its meaning and emotion into your 3D brain
                   visualization. The more posts you collect, the richer and more diverse your mind becomes.
                 </p>
                 <p>
-                  Creators can mint their content as 1/1 unique pieces or as limited editions,
-                  allowing for various levels of scarcity and value.
+                  Explore the Marketplace tab to discover neurons from all creators across the network,
+                  or visit individual creator profiles to see their complete collection.
                 </p>
               </div>
-            </Card>
-          )}
-        </div>
-      </div>
+        </Card>
+      )}
     </div>
-  );
-}
+  </div>
+</div>
+      </>
+      );
+    }
