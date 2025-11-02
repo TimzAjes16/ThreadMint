@@ -21,21 +21,22 @@
 - [x] Button component (primary, secondary, ghost variants)
 - [x] Card component
 - [x] PostCard component (Twitter-like post display)
-- [x] NFTCard component (OpenSea-like marketplace card) with engagement metrics
+- [x] NFTCard component (OpenSea-like marketplace card with engagement metrics, optimized)
 - [x] CreatePost component
 - [x] MindMini component (sidebar preview)
 - [x] Layout components (LeftRail, RightRail, FeedLayout)
 - [x] Header component (with Connect Wallet button and profile picture, responsive)
-- [x] UserMenu component (profile dropdown with auth options)
-- [x] LoginModal component (email/password login, centered, responsive)
-- [x] SignupModal component (user registration, centered, responsive)
-- [x] CollectionBanner component (neural-themed "Where's Wally" style banner with workers)
+- [x] UserMenu component (profile dropdown with auth options, opens login modal on click)
+- [x] LoginModal component (email/password login, centered, responsive, React portal)
+- [x] SignupModal component (user registration, centered, responsive, React portal)
+- [x] CollectionBanner component (simplified orange gradient banner for performance)
 - [x] CollectionHeader component (collection stats and info)
 - [x] MarketplaceFilters component
 - [x] MarketplaceTabs component
 - [x] Avatar2D component (programmatic 2D avatar generation)
 - [x] CommentThread component (Twitter-style comments with threading, auth-gated)
 - [x] Sidebar hover context for responsive layout adjustments
+- [x] BrainCanvasClient component (SSR-safe wrapper for 3D rendering)
 
 ### Pages
 - [x] Home/Feed page (with collection banner, OpenSea-style grid, LeftRail, Header, responsive, optimized)
@@ -62,6 +63,7 @@
 - [x] SynapseEdge component (connections between nodes)
 - [x] EmotionAura component (placeholder for shaders)
 - [x] HUDPanel component (overlay info)
+- [x] BrainCanvasClient component (SSR-safe client wrapper with mount guard)
 
 ### Database Schema
 - [x] Complete Supabase schema SQL migration
@@ -85,7 +87,7 @@
 - [x] POST /api/mint (mark post as minted)
 - [x] POST /api/collect (record collection & trigger absorption)
 - [x] POST /api/react (create reaction)
-- [x] GET /api/market (marketplace with filters, dummy data fallback, pagination, caching)
+- [x] GET /api/market (marketplace with filters, dummy data fallback, pagination, caching, timeout)
 - [x] GET /api/mind/graph (get 3D brain graph, dummy data fallback needed)
 - [x] POST /api/mind/recompute (recompute mind state)
 - [x] POST /api/ai/summary (generate summary + TTS, dummy data fallback)
@@ -117,6 +119,8 @@
 - [x] CN utility for className merging
 - [x] Dummy data generator (lib/dummy-data.ts) with seeded random for consistency
 - [x] Sidebar context provider for responsive hover state
+- [x] React Query configuration (optimized caching, stale time, gc time)
+- [x] Next.js configuration (webpack optimization, font optimization, package imports)
 - [x] React Query configuration (optimized caching, stale time, gc time)
 - [x] Next.js configuration (webpack optimization, font optimization, package imports)
 
