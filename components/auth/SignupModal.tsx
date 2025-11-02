@@ -21,67 +21,73 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-md p-8 bg-panel border-2 border-line">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-text">Create Account</h2>
-          <button
-            onClick={onClose}
-            className="text-muted hover:text-text transition-colors"
-          >
-            ✕
-          </button>
-        </div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+      <Card className="w-full max-w-md my-auto bg-panel border-2 border-line shadow-2xl">
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-text">Create Account</h2>
+            <button
+              onClick={onClose}
+              className="text-muted hover:text-text transition-colors text-xl leading-none"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
 
-        <div className="space-y-4">
+          <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text mb-2">
+            <label htmlFor="signup-username" className="block text-sm font-medium text-text mb-2">
               Username
             </label>
             <input
+              id="signup-username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="Choose a username"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text mb-2">
+            <label htmlFor="signup-email" className="block text-sm font-medium text-text mb-2">
               Email
             </label>
             <input
+              id="signup-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text mb-2">
+            <label htmlFor="signup-password" className="block text-sm font-medium text-text mb-2">
               Password
             </label>
             <input
+              id="signup-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="••••••••"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text mb-2">
+            <label htmlFor="signup-confirm-password" className="block text-sm font-medium text-text mb-2">
               Confirm Password
             </label>
             <input
+              id="signup-confirm-password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="••••••••"
             />
           </div>
@@ -135,6 +141,7 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
               Sign in
             </button>
           </div>
+        </div>
         </div>
       </Card>
     </div>

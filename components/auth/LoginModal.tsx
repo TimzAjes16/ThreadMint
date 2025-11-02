@@ -19,41 +19,45 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-md p-8 bg-panel border-2 border-line">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-text">Sign In</h2>
-          <button
-            onClick={onClose}
-            className="text-muted hover:text-text transition-colors"
-          >
-            ✕
-          </button>
-        </div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+      <Card className="w-full max-w-md my-auto bg-panel border-2 border-line shadow-2xl">
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-text">Sign In</h2>
+            <button
+              onClick={onClose}
+              className="text-muted hover:text-text transition-colors text-xl leading-none"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
 
-        <div className="space-y-4">
+          <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text mb-2">
+            <label htmlFor="login-email" className="block text-sm font-medium text-text mb-2">
               Email
             </label>
             <input
+              id="login-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text mb-2">
+            <label htmlFor="login-password" className="block text-sm font-medium text-text mb-2">
               Password
             </label>
             <input
+              id="login-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="••••••••"
             />
           </div>
@@ -110,6 +114,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
               Sign up
             </button>
           </div>
+        </div>
         </div>
       </Card>
     </div>
