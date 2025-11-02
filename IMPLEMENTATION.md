@@ -2,6 +2,19 @@
 
 ## ✅ Completed
 
+### Performance Optimizations (Latest - Dec 2024)
+- [x] **Bundle Size**: Dynamic imports for heavy components (CollectionBanner, RightRail)
+- [x] **Code Splitting**: Lazy loading with next/dynamic for reduced initial bundle
+- [x] **Image Optimization**: Next.js Image with Intersection Observer lazy loading
+- [x] **Caching**: React Query optimized staleTime/gcTime, API cache headers
+- [x] **Animations**: Removed Framer Motion from grid cards, CSS-only transforms
+- [x] **Banner**: Simplified from complex SVG to orange gradient (performance boost)
+- [x] **Memoization**: useMemo for calculations, React.memo for components
+- [x] **Webpack**: Optimized dev mode chunk loading configuration
+- [x] **SSR-Safe 3D**: BrainCanvasClient wrapper with client-side mount guard
+- [x] **API**: Pagination defaults (24 items), timeout handling (10s), error states
+- [x] **Fonts**: display: swap and preload for faster rendering
+
 ### Project Setup
 - [x] Next.js 15 project initialized with TypeScript
 - [x] TailwindCSS configured with design tokens
@@ -119,8 +132,6 @@
 - [x] CN utility for className merging
 - [x] Dummy data generator (lib/dummy-data.ts) with seeded random for consistency
 - [x] Sidebar context provider for responsive hover state
-- [x] React Query configuration (optimized caching, stale time, gc time)
-- [x] Next.js configuration (webpack optimization, font optimization, package imports)
 - [x] React Query configuration (optimized caching, stale time, gc time)
 - [x] Next.js configuration (webpack optimization, font optimization, package imports)
 
