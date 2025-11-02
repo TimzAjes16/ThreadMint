@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { useAccount } from 'wagmi';
@@ -15,12 +16,17 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
   const { isConnected } = useAccount();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
+  if (!isOpen || !mounted) return null;
+
+  const modalContent = (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
-      <Card className="w-full max-w-md my-auto bg-panel border-2 border-line shadow-2xl mx-2 sm:mx-0">
+      <Card className="w-full max-w-md bg-panel border-2 border-line shadow-2xl mx-auto">
         <div className="p-4 sm:p-6 md:p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-text">Sign In</h2>
@@ -119,5 +125,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
       </Card>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
 

@@ -46,22 +46,22 @@ export function CollectionHeader({
       </div>
 
       <div className="relative -mt-12 md:-mt-20 px-4 md:px-6">
-        <Card className="p-4 md:p-6">
+        <Card className="p-4 md:p-6 max-w-5xl mx-auto">
           {/* Collection Info */}
-          <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 mb-4 md:mb-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 mb-4 md:mb-6 text-center sm:text-left">
             <div className="w-20 h-20 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-brand-500 to-curiosity border-4 border-bg shadow-lg shrink-0 flex items-center justify-center text-3xl md:text-5xl">
               🧠
             </div>
-            <div className="flex-1 pt-0 md:pt-4">
+            <div className="flex-1 pt-0 md:pt-4 max-w-3xl">
               <h1 className="text-2xl md:text-4xl font-bold text-text mb-2">{name}</h1>
               {creator && (
-                <div className="flex items-center gap-2 text-muted mb-2 md:mb-3 text-sm md:text-base">
+                <div className="flex items-center justify-center sm:justify-start gap-2 text-muted mb-2 md:mb-3 text-sm md:text-base">
                   <span>By</span>
                   <span className="text-brand-400 font-medium">{creator}</span>
                 </div>
               )}
               {description && (
-                <p className="text-muted text-xs md:text-sm leading-relaxed max-w-2xl">
+                <p className="text-muted text-xs md:text-sm leading-relaxed max-w-2xl mx-auto sm:mx-0">
                   {description}
                 </p>
               )}
@@ -69,7 +69,7 @@ export function CollectionHeader({
           </div>
 
           {/* Stats Grid - Responsive */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 sm:gap-3 md:gap-4 pt-4 md:pt-6 border-t border-line">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 sm:gap-3 md:gap-4 pt-4 md:pt-6 border-t border-line max-w-5xl mx-auto">
             <div>
               <div className="text-xs text-muted font-medium mb-0.5 sm:mb-1">Floor price</div>
               <div className="text-base sm:text-lg font-bold text-text truncate">

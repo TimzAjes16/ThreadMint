@@ -74,6 +74,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
 
+    // Import Supabase only if needed
+    const { supabaseAdmin } = await import('@/lib/supabase');
+    
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+
     const body = await request.json();
     const { authorId, kind, body: postBody, mediaUrl } = body;
 

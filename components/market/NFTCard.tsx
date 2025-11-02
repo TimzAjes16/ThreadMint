@@ -3,10 +3,10 @@
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Avatar2D } from '../profile/Avatar2D';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { useState, memo, useMemo } from 'react';
+import { useState, memo, useMemo, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface NFTCardProps {
   id?: string;
@@ -54,12 +54,18 @@ function NFTCardComponent({
   const [isBookmarked, setIsBookmarked] = useState(bookmarked);
   const [isLiked, setIsLiked] = useState(false);
 
-  const timeStr = createdAt
-    ? formatDistanceToNow(
+  // Memoize time calculation to avoid re-computation on every render
+  const timeStr = useMemo(() => {
+    if (!createdAt) return '';
+    try {
+      return formatDistanceToNow(
         typeof createdAt === 'string' ? new Date(createdAt) : createdAt,
         { addSuffix: true }
-      )
-    : '';
+      );
+    } catch {
+      return '';
+    }
+  }, [createdAt]);
 
   const displayBody = body || title;
   const chipCls = {
@@ -82,20 +88,42 @@ function NFTCardComponent({
 
   const itemSlug = id || title.replace(/\s+/g, '-').toLowerCase().substring(0, 50);
   
+  // Use intersection observer for lazy loading images
+  const imgRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    if (!imgRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '50px' } // Start loading 50px before entering viewport
+    );
+
+    observer.observe(imgRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <Link href={`/item/${itemSlug}`}>
-      <motion.div
-        whileHover={{ y: -4 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      >
+      <div className="transform transition-transform duration-200 hover:-translate-y-1">
         <Card className="overflow-hidden bg-panel2" hover>
           {/* Creator Header */}
           <div className="p-3 pb-2 flex items-center gap-2">
             {creatorAvatar ? (
-              <img
+              <Image
                 src={creatorAvatar}
                 alt={creator}
+                width={32}
+                height={32}
                 className="h-8 w-8 rounded-full object-cover shrink-0"
+                loading="lazy"
+                unoptimized={creatorAvatar?.startsWith('http') === true}
               />
             ) : (
               <Avatar2D name={creator} size="sm" />
@@ -152,13 +180,19 @@ function NFTCardComponent({
           )}
 
           {/* Media */}
-          <div className="aspect-square bg-elev relative overflow-hidden group">
-            {image ? (
-              <img
+          <div ref={imgRef} className="aspect-square bg-elev relative overflow-hidden group">
+            {image && isInView ? (
+              <Image
                 src={image}
                 alt={title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                width={400}
+                height={400}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                unoptimized={image?.startsWith('http') === true} // Don't optimize external images
               />
+            ) : image ? (
+              <div className="h-full w-full bg-gradient-to-br from-brand-500/10 via-curiosity/10 to-brand-500/10 animate-pulse" />
             ) : (
               <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-brand-500/10 via-curiosity/10 to-brand-500/10">
                 <span className="text-5xl opacity-60">🧠</span>
@@ -290,7 +324,7 @@ function NFTCardComponent({
             </div>
           </div>
         </Card>
-    </motion.div>
+      </div>
     </Link>
   );
 }

@@ -71,8 +71,8 @@ export async function GET(request: NextRequest) {
         }, 0);
       };
 
-      // Apply pagination if limit is provided
-      const limit = parseInt(searchParams.get('limit') || filtered.length.toString());
+      // Apply pagination if limit is provided (default to 24 for better performance)
+      const limit = parseInt(searchParams.get('limit') || '24');
       const offset = parseInt(searchParams.get('offset') || '0');
       const paginated = filtered.slice(offset, offset + limit);
 
@@ -92,7 +92,8 @@ export async function GET(request: NextRequest) {
       });
 
       // Add cache headers for better performance
-      response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+      response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300'); // Reduced cache time for faster updates
+      response.headers.set('X-Content-Type-Options', 'nosniff');
       
       return response;
     }
@@ -242,13 +243,17 @@ export async function GET(request: NextRequest) {
       }, 0);
     };
 
+    // Calculate stats from returned items (optimized - no extra query)
     const stats = {
       totalSupply: calculateTotalSupply(allItems),
       listed: allItems.filter((item: any) => item.price_wei).length,
       owners: new Set(allItems.map((item: any) => item.users?.handle).filter(Boolean)).size,
     };
 
-    return NextResponse.json({ items: allItems, stats });
+    const response = NextResponse.json({ items: allItems, stats });
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    
+    return response;
   } catch (error: any) {
     console.error('API error:', error);
     return NextResponse.json({ items: [], error: error.message }, { status: 500 });

@@ -23,12 +23,12 @@ export function Header() {
       'left-0 md:left-16',
       isHovered && 'md:left-64'
     )}>
-      <div className="flex items-center px-3 sm:px-4 md:px-6 h-14 md:h-16 w-full gap-2 sm:gap-3">
+      <div className="flex items-center px-3 sm:px-4 md:px-6 h-14 md:h-16 w-full gap-2 sm:gap-3 overflow-x-auto overflow-y-hidden">
         {/* Mobile: Menu button (hidden as LeftRail has its own mobile menu) */}
-        <div className="md:hidden" />
+        <div className="md:hidden shrink-0" />
         
         {/* Search - responsive sizing */}
-        <div className="flex-1 md:flex-shrink-0 md:max-w-md md:mr-6 min-w-0">
+        <div className="flex-1 md:flex-shrink-0 md:max-w-md md:mr-6 min-w-0 shrink">
           <div className="relative">
             <input
               type="text"
@@ -54,7 +54,9 @@ export function Header() {
         {/* Right side: Profile & Wallet Connection - responsive */}
         <div className="flex items-center justify-end gap-2 sm:gap-3 flex-shrink-0">
           {/* Profile Picture / User Menu */}
-          <UserMenu onLoginClick={() => setShowLogin(true)} />
+          <div className="shrink-0">
+            <UserMenu onLoginClick={() => setShowLogin(true)} />
+          </div>
 
           <ConnectButton.Custom>
             {({

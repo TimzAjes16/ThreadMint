@@ -1,20 +1,35 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { Card } from '@/components/ui/Card';
+import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+
+// Regular imports for components used immediately
 import { NFTCard } from '@/components/market/NFTCard';
 import { CollectionHeader } from '@/components/market/CollectionHeader';
 import { MarketplaceFilters } from '@/components/market/MarketplaceFilters';
 import { MarketplaceTabs } from '@/components/market/MarketplaceTabs';
 import { Header } from '@/components/layout/Header';
 import { LeftRail } from '@/components/layout/LeftRail';
-import { useQuery } from '@tanstack/react-query';
-import { Card } from '@/components/ui/Card';
-import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 
-const CollectionBanner = dynamic(() => import('@/components/market/CollectionBanner').then(m => ({ default: m.CollectionBanner })), {
-  ssr: false,
-  loading: () => <div className="h-48 md:h-64 lg:h-80 bg-gradient-to-br from-brand-900/40 via-curiosity-900/30 to-brand-900/40 animate-pulse" />
-});
+// Lazy load heavy components to improve initial load time
+const CollectionBanner = dynamic(
+  () => import('@/components/market/CollectionBanner').then((mod) => ({ default: mod.CollectionBanner })),
+  {
+    ssr: false,
+    loading: () => <div className="h-48 md:h-64 lg:h-80 bg-gradient-to-br from-orange-500/20 via-orange-400/20 to-amber-500/20 animate-pulse" />
+  }
+);
+
+// Lazy load RightRail since it's in the sidebar and not critical for initial render
+const RightRail = dynamic(
+  () => import('@/components/layout/RightRail').then((mod) => ({ default: mod.RightRail })),
+  {
+    ssr: false,
+    loading: () => null, // Don't show loading for sidebar
+  }
+);
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('items');
@@ -36,18 +51,32 @@ export default function Home() {
       params.set('limit', '24'); // Limit initial load
 
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
         const res = await fetch(`/api/market?${params}`, {
-          next: { revalidate: 300 }, // Revalidate every 5 minutes
+          cache: 'default',
+          signal: controller.signal,
         });
+        
+        clearTimeout(timeoutId);
+        
         if (!res.ok) throw new Error('Failed to fetch');
-        return res.json();
+        const data = await res.json();
+        return data;
       } catch (error) {
-        console.error('Error fetching items:', error);
-        return { items: [] };
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.warn('Request timeout');
+        } else {
+          console.error('Error fetching items:', error);
+        }
+        return { items: [], stats: { totalSupply: 0, listed: 0, owners: 0 } };
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnMount: false, // Use cached data on mount
+    refetchOnWindowFocus: false, // Don't refetch on focus
   });
 
   // Memoize calculations for better performance
@@ -103,10 +132,10 @@ export default function Home() {
         {/* Top Header with Wallet Connection */}
         <Header />
       
-      {/* Collection Banner - Lazy loaded */}
-      <div className="pt-14 md:pt-16">
-        <CollectionBanner />
-      </div>
+        {/* Collection Banner - Lazy loaded */}
+        <div className="pt-14 md:pt-16">
+          <CollectionBanner />
+        </div>
       
       {/* Collection Header */}
       <CollectionHeader
@@ -122,7 +151,7 @@ export default function Home() {
       />
 
       <div className="px-4 md:px-6 pb-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Feed Indicator */}
           <div className="mb-4 flex items-center gap-2 text-xs md:text-sm text-muted">
             <span>📡</span>
@@ -157,9 +186,9 @@ export default function Home() {
                 </div>
                   ) : mintedItems && mintedItems.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                  {mintedItems.map((item: any) => (
+                  {mintedItems.map((item: any, index: number) => (
                     <NFTCard
-                      key={item.id}
+                      key={item.id || `item-${index}`}
                       id={item.id}
                       image={item.media_url}
                       title={
@@ -247,11 +276,16 @@ export default function Home() {
                   or visit individual creator profiles to see their complete collection.
                 </p>
               </div>
-        </Card>
-      )}
-    </div>
-  </div>
-</div>
-      </>
-      );
-    }
+            </Card>
+          )}
+          </div>
+        </div>
+      </div>
+      
+      {/* Right Rail - Fixed sidebar on large screens */}
+      <aside className="hidden lg:block fixed right-0 top-0 h-screen w-80 border-l border-line bg-panel overflow-y-auto p-6 z-30">
+        <RightRail />
+      </aside>
+    </>
+  );
+}

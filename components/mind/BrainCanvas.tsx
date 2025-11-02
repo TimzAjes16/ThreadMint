@@ -6,7 +6,7 @@ import { NeuronNode } from './NeuronNode';
 import { SynapseEdge } from './SynapseEdge';
 import { EmotionAura } from './EmotionAura';
 import { HUDPanel } from './HUDPanel';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 interface BrainCanvasProps {
   nodes: any[];
@@ -14,6 +14,24 @@ interface BrainCanvasProps {
 }
 
 export function BrainCanvas({ nodes = [], edges = [] }: BrainCanvasProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // Only render after component has mounted on client
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="relative w-full h-[600px] rounded-lg border border-line bg-elev overflow-hidden flex items-center justify-center">
+        <div className="text-center text-subtle">
+          <div className="text-lg font-medium mb-2">Loading 3D brain...</div>
+          <div className="text-sm">Initializing neural network visualization</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-[600px] rounded-lg border border-line bg-elev overflow-hidden">
       <Canvas>
