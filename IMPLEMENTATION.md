@@ -128,6 +128,7 @@
 
 ### Utilities
 - [x] Supabase client setup (conditional initialization, dummy data fallback)
+- [x] **AuthProvider** (`lib/auth-context.tsx`) - centralized auth state management
 - [x] Utility functions (formatEth, formatAddress, calculateAbsorptionWeight)
 - [x] CN utility for className merging
 - [x] Dummy data generator (lib/dummy-data.ts) with seeded random for consistency
@@ -138,11 +139,18 @@
 ### Documentation
 - [x] README.md
 - [x] SETUP.md
+- [x] **SETUP_AUTH.md** - comprehensive authentication setup guide
 - [x] Implementation checklist
 
 ---
 
 ### Features Completed (Recent)
+- [x] **Complete Authentication System** with Supabase Auth (Login, Signup, Sign Out)
+- [x] **AuthProvider** and useAuth hook for centralized auth state management
+- [x] **Protected Actions** - like, bookmark, comment, create post require authentication
+- [x] **CreatePost Component** - complete post creation UI with all features
+- [x] **UserMenu Integration** - profile dropdown with sign out functionality
+- [x] **Wallet Linking** - automatic wallet address linking to authenticated users
 - [x] Responsive design for mobile, tablet, desktop
 - [x] Collapsible sidebar with hover expansion
 - [x] Collection banner simplified to orange gradient (performance optimization)
@@ -190,17 +198,18 @@
 - [ ] Test database connections
 
 ### Authentication
-- [x] Login modal UI (email/password, centered, responsive, accessible)
-- [x] Signup modal UI (user registration, centered, responsive, accessible)
-- [x] User menu dropdown (profile, settings, help)
+- [x] **Complete Supabase Auth integration** (sign up, sign in, sign out)
+- [x] **AuthProvider and useAuth hook** for centralized auth state management
+- [x] Login modal UI (email/password, centered, responsive, accessible, connected)
+- [x] Signup modal UI (user registration, centered, responsive, accessible, connected)
+- [x] User menu dropdown (profile, settings, help, sign out)
 - [x] Profile picture in header (wallet-connected state, 2D avatar fallback)
 - [x] Profile page structure (responsive, LeftRail, Header)
 - [x] Comment authentication gates (require sign-in to comment/reply)
 - [x] Verified badge clickable functionality
-- [ ] Implement Supabase Auth integration
-- [ ] Link wallet address to user account
-- [ ] Handle user registration/login backend flow
-- [ ] Update API routes to use authenticated user context
+- [x] Link wallet address to user account (automatic linking on wallet connect)
+- [x] Handle user registration/login backend flow (Supabase)
+- [ ] Update API routes to use authenticated user context (for real data)
 
 ### Smart Contracts Deployment
 - [ ] Install Foundry dependencies (OpenZeppelin)
