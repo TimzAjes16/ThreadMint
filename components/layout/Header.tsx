@@ -7,7 +7,7 @@ import { UserMenu } from './UserMenu';
 import { Avatar2D } from '../profile/Avatar2D';
 import { LoginModal } from '../auth/LoginModal';
 import { SignupModal } from '../auth/SignupModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSidebar } from '@/lib/sidebar-context';
 import clsx from 'clsx';
 
@@ -16,6 +16,13 @@ export function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const { isHovered } = useSidebar();
+
+  // Listen for custom event to open login modal
+  useEffect(() => {
+    const handleOpenLogin = () => setShowLogin(true);
+    window.addEventListener('openLogin', handleOpenLogin);
+    return () => window.removeEventListener('openLogin', handleOpenLogin);
+  }, []);
 
   return (
     <header className={clsx(

@@ -5,7 +5,7 @@ import { Avatar2D } from '../profile/Avatar2D';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import { Button } from '../ui/Button';
-import { useAccount } from 'wagmi';
+import { useAuth } from '@/lib/auth-context';
 import { LoginModal } from '../auth/LoginModal';
 
 interface Comment {
@@ -28,7 +28,7 @@ interface CommentThreadProps {
 }
 
 export function CommentThread({ postId, comments = [], commentsCount, onAddComment }: CommentThreadProps) {
-  const { isConnected } = useAccount();
+  const { user } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -100,7 +100,7 @@ export function CommentThread({ postId, comments = [], commentsCount, onAddComme
   };
 
   const handleSubmit = () => {
-    if (!isConnected) {
+    if (!user) {
       setShowLogin(true);
       return;
     }
@@ -122,7 +122,7 @@ export function CommentThread({ postId, comments = [], commentsCount, onAddComme
   };
 
   const handleReply = (commentId: string) => {
-    if (!isConnected) {
+    if (!user) {
       setShowLogin(true);
       return;
     }
@@ -170,7 +170,7 @@ export function CommentThread({ postId, comments = [], commentsCount, onAddComme
     <div className="space-y-4">
       {/* Add Comment */}
       <Card className="p-4 bg-panel2">
-        {!isConnected ? (
+        {!user ? (
           <div className="text-center py-4">
             <div className="text-2xl mb-2">🧙‍♂️</div>
             <p className="text-text font-medium mb-2">Sign in to comment</p>

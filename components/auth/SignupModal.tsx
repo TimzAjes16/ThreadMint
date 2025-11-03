@@ -18,11 +18,77 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSignup = async () => {
+    setError('');
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      if (!supabase) {
+        setError('Authentication not configured');
+        setLoading(false);
+        return;
+      }
+
+      // Sign up user
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      // Create profile in public.users table
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            handle: username.toLowerCase(),
+            display_name: username,
+            bio: '',
+          });
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          setError('Failed to create profile. Please try again.');
+        } else {
+          onClose();
+          setEmail('');
+          setPassword('');
+          setUsername('');
+          setConfirmPassword('');
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign up');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen || !mounted) return null;
 
@@ -42,6 +108,12 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
           </div>
 
           <div className="space-y-4">
+          {error && (
+            <div className="bg-anger/20 text-anger px-4 py-2 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+          
           <div>
             <label htmlFor="signup-username" className="block text-sm font-medium text-text mb-2">
               Username
@@ -53,6 +125,7 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="Choose a username"
+              disabled={loading}
             />
           </div>
 
@@ -67,6 +140,7 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="you@example.com"
+              disabled={loading}
             />
           </div>
 
@@ -81,6 +155,7 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="••••••••"
+              disabled={loading}
             />
           </div>
 
@@ -95,11 +170,12 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full bg-panel2 border border-line rounded-lg px-4 py-2.5 text-text focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
               placeholder="••••••••"
+              disabled={loading}
             />
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted">
-            <input type="checkbox" className="rounded" />
+            <input type="checkbox" className="rounded" disabled={loading} />
             <span>
               I agree to the Terms of Service and Privacy Policy
             </span>
@@ -108,12 +184,10 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
           <Button
             className="w-full"
             variant="primary"
-            onClick={() => {
-              // TODO: Implement signup
-              console.log('Signup:', { username, email, password });
-            }}
+            onClick={handleSignup}
+            disabled={loading || !username || !email || !password || !confirmPassword}
           >
-            Create Account
+            {loading ? 'Creating account...' : 'Create Account'}
           </Button>
 
           <div className="relative my-6">

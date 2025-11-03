@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { Card } from '../ui/Card';
 import { Avatar2D } from '../profile/Avatar2D';
+import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
 
 interface UserMenuProps {
@@ -15,6 +16,7 @@ export function UserMenu({ avatarUrl, onLoginClick }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { address, isConnected } = useAccount();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -37,12 +39,12 @@ export function UserMenu({ avatarUrl, onLoginClick }: UserMenuProps) {
     : 'Guest';
 
   const handleClick = () => {
-    if (!isConnected) {
-      // If not connected, open login modal directly
+    if (!user && !isConnected) {
+      // If not authenticated or connected, open login modal directly
       setIsOpen(false);
       onLoginClick?.();
     } else {
-      // If connected, toggle dropdown menu
+      // If authenticated or connected, toggle dropdown menu
       setIsOpen(!isOpen);
     }
   };
@@ -64,7 +66,7 @@ export function UserMenu({ avatarUrl, onLoginClick }: UserMenuProps) {
         )}
       </button>
 
-      {isOpen && isConnected && (
+      {isOpen && (user || isConnected) && (
         <Card className="absolute right-0 top-12 w-64 p-2 bg-panel border-2 border-line shadow-lg z-50">
           <div className="space-y-1">
             <div className="px-4 py-3 border-b border-line">
@@ -111,8 +113,8 @@ export function UserMenu({ avatarUrl, onLoginClick }: UserMenuProps) {
             <div className="border-t border-line my-1" />
             <button
               className="w-full text-left px-4 py-2 text-sm text-anger hover:bg-panel2 rounded-lg transition-colors"
-              onClick={() => {
-                // TODO: Implement logout
+              onClick={async () => {
+                await signOut();
                 setIsOpen(false);
               }}
             >

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { useState, memo, useMemo, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useAuth } from '@/lib/auth-context';
 
 interface NFTCardProps {
   id?: string;
@@ -51,6 +52,7 @@ function NFTCardComponent({
   left,
   onCollect,
 }: NFTCardProps) {
+  const { user } = useAuth();
   const [isBookmarked, setIsBookmarked] = useState(bookmarked);
   const [isLiked, setIsLiked] = useState(false);
 
@@ -233,6 +235,11 @@ function NFTCardComponent({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      if (!user) {
+                        const event = new CustomEvent('openLogin');
+                        window.dispatchEvent(event);
+                        return;
+                      }
                       setIsLiked(!isLiked);
                     }}
                   >
@@ -269,6 +276,11 @@ function NFTCardComponent({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    if (!user) {
+                      const event = new CustomEvent('openLogin');
+                      window.dispatchEvent(event);
+                      return;
+                    }
                     setIsBookmarked(!isBookmarked);
                   }}
                   className="hover:text-text transition-colors shrink-0 ml-auto"
